@@ -3,14 +3,17 @@ import { StyleSheet } from "react-native";
 import { ThemedView } from "../themed-view";
 
 type Props = {
+  backgroundColor?: string;
   children: React.ReactNode;
 };
 
-export function BaseCard({ children }: Props) {
-  const backgroundColor = useThemeColor({}, "baseCardBackground");
+export function BaseCard({ backgroundColor, children }: Props) {
+  const defaultBg = useThemeColor({}, "baseCardBackground");
 
   return (
-    <ThemedView style={[styles.card, { backgroundColor }]}>
+    <ThemedView
+      style={[styles.card, { backgroundColor: backgroundColor ?? defaultBg }]}
+    >
       {children}
     </ThemedView>
   );
@@ -19,7 +22,7 @@ export function BaseCard({ children }: Props) {
 const styles = StyleSheet.create({
   card: {
     borderRadius: 12,
-    padding: 16,
+    padding: 20,
     elevation: 3,
   },
 });

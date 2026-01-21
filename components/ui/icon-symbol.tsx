@@ -9,7 +9,7 @@ type IconMapping = Record<
   SymbolViewProps["name"],
   ComponentProps<typeof MaterialIcons>["name"]
 >;
-type IconSymbolName = keyof typeof MAPPING;
+export type IconSymbolName = keyof typeof MAPPING;
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -24,6 +24,9 @@ const MAPPING = {
   "receipt.fill": "receipt",
   "chart.bar.xaxis": "bar-chart",
   "gearshape.fill": "settings",
+  dollarsign: "attach-money",
+  "arrow.up.forward": "trending-up",
+  "arrow.down.forward": "trending-down",
 } as IconMapping;
 
 /**
