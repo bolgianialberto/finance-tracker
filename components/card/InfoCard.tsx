@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components/text/themed-text";
+import { ThemedText } from "@/components/ui/themed-text";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { StyleSheet, View } from "react-native";
 import { BaseCard } from "./BaseCard";

@@ -1,6 +1,6 @@
 import { InfoCard } from "@/components/card/InfoCard";
 import { StatsCard } from "@/components/card/StatsCard";
-import { ThemedText } from "@/components/text/themed-text";
+import { ThemedText } from "@/components/ui/themed-text";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
