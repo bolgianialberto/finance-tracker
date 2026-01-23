@@ -14,15 +14,14 @@ export function FinanceToggle({ value, onChange }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: bg }]}>
       <ToggleButton
-        label="Income"
-        variant={value === "income" ? "selected" : "unselected"}
-        onPress={() => onChange("income")}
-      />
-
-      <ToggleButton
         label="Expenses"
         variant={value === "expenses" ? "selected" : "unselected"}
         onPress={() => onChange("expenses")}
+      />
+      <ToggleButton
+        label="Income"
+        variant={value === "income" ? "selected" : "unselected"}
+        onPress={() => onChange("income")}
       />
     </View>
   );
