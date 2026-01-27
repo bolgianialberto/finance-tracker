@@ -1,6 +1,6 @@
-import type { CategoryAmount } from "../models/category-amount";
+import { CategoryStats } from "../models/category-stats";
 
-const incomeCategories: CategoryAmount[] = [
+const incomeCategories: CategoryStats[] = [
   {
     category: {
       id: "salary",
@@ -9,6 +9,7 @@ const incomeCategories: CategoryAmount[] = [
       color: "#5548F9",
     },
     amount: 2400,
+    transactionCount: 2,
   },
   {
     category: {
@@ -18,10 +19,11 @@ const incomeCategories: CategoryAmount[] = [
       color: "#19e64c",
     },
     amount: 600,
+    transactionCount: 1,
   },
 ];
 
-const expenseCategories: CategoryAmount[] = [
+const expenseCategories: CategoryStats[] = [
   {
     category: {
       id: "rent",
@@ -30,6 +32,7 @@ const expenseCategories: CategoryAmount[] = [
       color: "#ff0000",
     },
     amount: 900,
+    transactionCount: 1,
   },
   {
     category: {
@@ -39,6 +42,7 @@ const expenseCategories: CategoryAmount[] = [
       color: "#ff9800",
     },
     amount: 400,
+    transactionCount: 2,
   },
 ];
 

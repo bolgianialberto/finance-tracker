@@ -10,7 +10,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
   const [type, setType] = useState<FinanceType>("expenses");
-  const { data, total } = useFinanceData(type);
+  const { data, total, transactions } = useFinanceData(type);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
+  const filteredTransactions = expandedCategory
+    ? transactions.filter((tx) => tx.categoryId === expandedCategory)
+    : [];
 
   return (
     <SafeAreaView style={styles.externalContainer}>
@@ -22,7 +27,14 @@ export default function TransactionsScreen() {
         <View style={styles.divider} />
         <FinanceDonutChart data={data} total={total} />
         <View style={styles.divider} />
-        <CategoryLegend data={data} />
+        <CategoryLegend
+          data={data}
+          expandedCategoryId={expandedCategory}
+          transactions={filteredTransactions}
+          onPressCategory={(id) =>
+            setExpandedCategory((prev) => (prev === id ? null : id))
+          }
+        />
       </View>
     </SafeAreaView>
   );
