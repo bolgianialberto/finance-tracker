@@ -21,6 +21,8 @@ const MAPPING = {
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
+  "chevron.down": "keyboard-arrow-down",
+  "chevron.up": "keyboard-arrow-up",
   "receipt.fill": "receipt",
   "chart.bar.xaxis": "bar-chart",
   "gearshape.fill": "settings",

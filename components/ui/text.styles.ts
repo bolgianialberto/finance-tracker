@@ -3,6 +3,7 @@ import { TextStyle } from "react-native";
 export type TextVariant =
   | "default"
   | "caption"
+  | "captionBold"
   | "title"
   | "defaultSemiBold"
   | "subtitle"
@@ -16,6 +17,11 @@ export const TEXT_STYLES: Record<TextVariant, TextStyle> = {
   caption: {
     fontSize: 12,
     lineHeight: 24,
+  },
+  captionBold: {
+    fontSize: 12,
+    lineHeight: 24,
+    fontWeight: "600",
   },
   defaultSemiBold: {
     fontSize: 16,

@@ -12,10 +12,11 @@ export function TransactionList({ transactions }: Props) {
       {transactions.map((tx) => (
         <View key={tx.id} style={styles.row}>
           <View style={styles.center}>
-            <ThemedText>{tx.note || "No description"}</ThemedText>
+            <ThemedText type={"captionBold"}>
+              {tx.note || "No description"}
+            </ThemedText>
             <ThemedText style={styles.subLabel}>{tx.accountName}</ThemedText>
           </View>
-
           <ThemedText style={styles.amount}>€ {tx.amount}</ThemedText>
         </View>
       ))}
@@ -26,7 +27,6 @@ export function TransactionList({ transactions }: Props) {
 const styles = StyleSheet.create({
   container: {
     paddingLeft: 40,
-    gap: 8,
   },
   row: {
     flexDirection: "row",
@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   subLabel: {
     fontSize: 12,
     opacity: 0.6,
+    marginTop: -5,
   },
   amount: {
     fontWeight: "500",

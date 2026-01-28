@@ -19,40 +19,53 @@ export function CategoryLegend({
   onPressCategory,
 }: Props) {
   return (
-    <View style={styles.container}>
-      {data.map((item) => {
+    <View>
+      {data.map((item, index) => {
         const isExpanded = item.category.id === expandedCategoryId;
         const categoryTransactions = transactions.filter(
           (tx) => tx.categoryId === item.category.id,
         );
         return (
           <View key={item.category.id}>
-            <Pressable
-              onPress={() => onPressCategory?.(item.category.id)}
-              style={styles.row}
-            >
-              <View
-                style={[
-                  styles.iconWrapper,
-                  { backgroundColor: item.category.color },
-                ]}
+            <View style={styles.item}>
+              <Pressable
+                onPress={() => onPressCategory?.(item.category.id)}
+                style={styles.row}
               >
-                <IconSymbol name={item.category.icon} size={16} color="#fff" />
-              </View>
+                <View
+                  style={[
+                    styles.iconWrapper,
+                    { backgroundColor: item.category.color },
+                  ]}
+                >
+                  <IconSymbol
+                    name={item.category.icon}
+                    size={16}
+                    color="#fff"
+                  />
+                </View>
 
-              <View style={styles.vertical}>
-                <ThemedText style={styles.label}>
-                  {item.category.name}
-                </ThemedText>
-                <ThemedText style={styles.subLabel}>
-                  {item.transactionCount} transactions
-                </ThemedText>
-              </View>
-              <ThemedText style={styles.amount}>€ {item.amount}</ThemedText>
-            </Pressable>
-            {isExpanded && (
-              <TransactionList transactions={categoryTransactions} />
-            )}
+                <View style={styles.vertical}>
+                  <ThemedText style={styles.label}>
+                    {item.category.name}
+                  </ThemedText>
+                  <ThemedText style={styles.subLabel}>
+                    {item.transactionCount} transactions
+                  </ThemedText>
+                </View>
+                <ThemedText style={styles.amount}>€ {item.amount}</ThemedText>
+                <IconSymbol
+                  name={isExpanded ? "chevron.up" : "chevron.down"}
+                  size={24}
+                  color="#11181C"
+                />
+              </Pressable>
+              {isExpanded && (
+                <TransactionList transactions={categoryTransactions} />
+              )}
+            </View>
+            {/* DIVIDER (non sull'ultimo) */}
+            {index < data.length - 1 && <View style={styles.divider} />}
           </View>
         );
       })}
@@ -61,9 +74,6 @@ export function CategoryLegend({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: 12,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -80,11 +90,19 @@ const styles = StyleSheet.create({
   subLabel: {
     fontSize: 12,
     opacity: 0.6,
+    marginTop: -5,
   },
   amount: {
     fontWeight: "600",
   },
   vertical: {
     flex: 1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: "#ccccccff",
+  },
+  item: {
+    paddingVertical: 8, // 🔥 spazio sopra E sotto
   },
 });
