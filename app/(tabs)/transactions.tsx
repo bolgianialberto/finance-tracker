@@ -1,3 +1,4 @@
+import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { CategoryLegend } from "@/features/finance/components/category-legend";
 import { FinanceDonutChart } from "@/features/finance/components/finance-donut-chart";
@@ -26,11 +27,14 @@ export default function TransactionsScreen() {
     <SafeAreaView style={styles.externalContainer} edges={["top"]}>
       <View style={styles.header}>
         <ThemedText type="subtitle">Transactions</ThemedText>
+        <MonthLabel />
       </View>
       <View style={styles.container}>
         <FinanceToggle value={type} onChange={setType} />
         <View style={styles.divider} />
-        <FinanceDonutChart data={data} total={total} />
+        <View style={styles.chartContainer}>
+          <FinanceDonutChart data={data} total={total} />
+        </View>
       </View>
       <View style={styles.divider} />
       <View style={styles.legendContainer}>
@@ -62,7 +66,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
-    gap: 27,
+    gap: 16,
   },
   divider: {
     height: 1,
@@ -75,5 +79,9 @@ const styles = StyleSheet.create({
   legendContent: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+  },
+  chartContainer: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -1,22 +1,16 @@
 import { InfoCard } from "@/components/card/InfoCard";
 import { StatsCard } from "@/components/card/StatsCard";
+import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const monthLabel = new Date().toLocaleDateString("en-US", {
-  month: "long",
-  year: "numeric",
-});
 
 export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.externalContainer}>
       <View style={styles.header}>
         <ThemedText type="subtitle">Dashboard</ThemedText>
-        <ThemedText type="default" style={styles.month}>
-          {monthLabel}
-        </ThemedText>
+        <MonthLabel />
       </View>
 
       <View style={styles.container}>

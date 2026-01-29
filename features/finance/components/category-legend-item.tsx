@@ -22,42 +22,36 @@ export function CategoryLegendItem({
     (tx) => tx.categoryId === item.category.id,
   );
   return (
-    <View>
-      return (
-      <View key={item.category.id}>
-        <View style={styles.item}>
-          <Pressable
-            onPress={() => onPressCategory?.(item.category.id)}
-            style={styles.row}
+    <View key={item.category.id}>
+      <View style={styles.item}>
+        <Pressable
+          onPress={() => onPressCategory?.(item.category.id)}
+          style={styles.row}
+        >
+          <View
+            style={[
+              styles.iconWrapper,
+              { backgroundColor: item.category.color },
+            ]}
           >
-            <View
-              style={[
-                styles.iconWrapper,
-                { backgroundColor: item.category.color },
-              ]}
-            >
-              <IconSymbol name={item.category.icon} size={16} color="#fff" />
-            </View>
+            <IconSymbol name={item.category.icon} size={16} color="#fff" />
+          </View>
 
-            <View style={styles.vertical}>
-              <ThemedText style={styles.label}>{item.category.name}</ThemedText>
-              <ThemedText style={styles.subLabel}>
-                {item.transactionCount} transactions
-              </ThemedText>
-            </View>
-            <ThemedText style={styles.amount}>€ {item.amount}</ThemedText>
-            <IconSymbol
-              name={isExpanded ? "chevron.up" : "chevron.down"}
-              size={24}
-              color="#11181C"
-            />
-          </Pressable>
-          {isExpanded && (
-            <TransactionList transactions={categoryTransactions} />
-          )}
-        </View>
+          <View style={styles.vertical}>
+            <ThemedText style={styles.label}>{item.category.name}</ThemedText>
+            <ThemedText style={styles.subLabel}>
+              {item.transactionCount} transactions
+            </ThemedText>
+          </View>
+          <ThemedText style={styles.amount}>€ {item.amount}</ThemedText>
+          <IconSymbol
+            name={isExpanded ? "chevron.up" : "chevron.down"}
+            size={24}
+            color="#11181C"
+          />
+        </Pressable>
+        {isExpanded && <TransactionList transactions={categoryTransactions} />}
       </View>
-      );
     </View>
   );
 }
