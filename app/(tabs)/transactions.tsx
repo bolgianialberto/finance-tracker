@@ -11,11 +11,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function TransactionsScreen() {
   const [type, setType] = useState<FinanceType>("expenses");
   const { data, total, transactions } = useFinanceData(type);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>([]);
 
-  const filteredTransactions = expandedCategory
-    ? transactions.filter((tx) => tx.categoryId === expandedCategory)
-    : [];
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategoryIds(
+      (prev) =>
+        prev.includes(categoryId)
+          ? prev.filter((id) => id !== categoryId) // chiudi
+          : [...prev, categoryId], // apri
+    );
+  };
 
   return (
     <SafeAreaView style={styles.externalContainer} edges={["top"]}>
@@ -35,11 +40,9 @@ export default function TransactionsScreen() {
         >
           <CategoryLegend
             data={data}
-            expandedCategoryId={expandedCategory}
-            transactions={filteredTransactions}
-            onPressCategory={(id) =>
-              setExpandedCategory((prev) => (prev === id ? null : id))
-            }
+            expandedCategoryIds={expandedCategoryIds}
+            transactions={transactions}
+            onPressCategory={toggleCategory}
           />
         </ScrollView>
       </View>
