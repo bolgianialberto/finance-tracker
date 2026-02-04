@@ -28,6 +28,9 @@ export const Colors = {
     unselectedToggleBackground: "#ccccccff",
     selectedToggleText: "#11181C",
     unselectedToggleText: "#11181C",
+
+    selectedTimeToggleText: "#11181C",
+    unselectedTimeToggleText: "#ccccccff",
   },
   dark: {
     text: "#11181C",
@@ -53,5 +56,7 @@ export const Colors = {
     unselectedToggleBackground: "#bfc2c4ff",
     selectedToggleText: "#11181C",
     unselectedToggleText: "#11181C",
+    selectedTimeToggleText: "#11181C",
+    unselectedTimeToggleText: "#ccccccff",
   },
 };

@@ -39,7 +39,8 @@ export function TimeRangeToggle({ value, onChange }: Props) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
   },
   item: {
     flexDirection: "row",

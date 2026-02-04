@@ -16,9 +16,7 @@ export function ChartCard({ header, children }: Props) {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    marginBottom: 12,
-  },
+  header: { width: "100%", marginBottom: 12 },
   content: {
     gap: 16,
   },

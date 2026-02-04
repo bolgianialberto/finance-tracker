@@ -26,9 +26,9 @@ export const TIME_TOGGLE_STYLES: Record<
   }
 > = {
   selected: {
-    text: "selectedToggleText",
+    text: "selectedTimeToggleText",
   },
   unselected: {
-    text: "unselectedToggleText",
+    text: "unselectedTimeToggleText",
   },
 };
