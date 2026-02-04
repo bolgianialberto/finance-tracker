@@ -30,7 +30,13 @@ export default function TransactionsScreen() {
         <MonthLabel />
       </View>
       <View style={styles.container}>
-        <FinanceToggle value={type} onChange={setType} />
+        <FinanceToggle
+          value={type}
+          onChange={setType}
+          getGeneral={false}
+          getIncome={true}
+          getExpenses={true}
+        />
         <View style={styles.divider} />
         <View style={styles.chartContainer}>
           <FinanceDonutChart data={data} total={total} />

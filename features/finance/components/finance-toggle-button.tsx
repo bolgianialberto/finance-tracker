@@ -1,7 +1,10 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { Pressable, StyleSheet } from "react-native";
-import { TOGGLE_STYLES, ToggleVariant } from "./toggle.styles";
-import { ThemedText } from "./ui/themed-text";
+import {
+  FINANCE_TOGGLE_STYLES,
+  ToggleVariant,
+} from "../../../components/toggle.styles";
+import { ThemedText } from "../../../components/ui/themed-text";
 
 type Props = {
   label: string;
@@ -10,7 +13,7 @@ type Props = {
 };
 
 export function ToggleButton({ label, variant, onPress }: Props) {
-  const styleTokens = TOGGLE_STYLES[variant];
+  const styleTokens = FINANCE_TOGGLE_STYLES[variant];
 
   const backgroundColor = useThemeColor({}, styleTokens.background);
   const textColor = useThemeColor({}, styleTokens.text);

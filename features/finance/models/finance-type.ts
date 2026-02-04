@@ -1,1 +1,1 @@
-export type FinanceType = "income" | "expenses";
+export type FinanceType = "income" | "expenses" | "general";

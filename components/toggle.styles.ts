@@ -2,7 +2,7 @@ import type { ColorToken } from "@/constants/colors";
 
 export type ToggleVariant = "selected" | "unselected";
 
-export const TOGGLE_STYLES: Record<
+export const FINANCE_TOGGLE_STYLES: Record<
   ToggleVariant,
   {
     background: ColorToken;
@@ -15,6 +15,20 @@ export const TOGGLE_STYLES: Record<
   },
   unselected: {
     background: "unselectedToggleBackground",
+    text: "unselectedToggleText",
+  },
+};
+
+export const TIME_TOGGLE_STYLES: Record<
+  ToggleVariant,
+  {
+    text: ColorToken;
+  }
+> = {
+  selected: {
+    text: "selectedToggleText",
+  },
+  unselected: {
     text: "unselectedToggleText",
   },
 };

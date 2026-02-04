@@ -13,6 +13,14 @@ export function useFinanceData(type: FinanceType) {
   useEffect(() => {
     setLoading(true);
 
+    if (type === "general") {
+      // 🔥 tutte le transazioni
+      setTransactions(mockTransactions);
+      setData([]);
+      setLoading(false);
+      return;
+    }
+
     // 🔁 oggi mock
     const categories = getFinanceMock(type);
     setData(categories);

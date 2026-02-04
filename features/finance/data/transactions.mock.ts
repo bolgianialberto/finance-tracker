@@ -8,6 +8,7 @@ export const mockTransactions: Transaction[] = [
     note: "January rent",
     accountName: "Bank",
     type: "expenses",
+    date: "12/07/26",
   },
   {
     id: "t2",
@@ -16,6 +17,7 @@ export const mockTransactions: Transaction[] = [
     note: "Groceries",
     accountName: "Card",
     type: "expenses",
+    date: "12/07/26",
   },
   {
     id: "t3",
@@ -24,6 +26,7 @@ export const mockTransactions: Transaction[] = [
     note: "Restaurant",
     accountName: "Card",
     type: "expenses",
+    date: "12/07/26",
   },
   {
     id: "t4",
@@ -32,6 +35,7 @@ export const mockTransactions: Transaction[] = [
     note: "Salary",
     accountName: "Bank",
     type: "income",
+    date: "12/07/26",
   },
   {
     id: "t4",
@@ -40,5 +44,6 @@ export const mockTransactions: Transaction[] = [
     note: "Freelance",
     accountName: "Bank",
     type: "income",
+    date: "12/07/26",
   },
 ];

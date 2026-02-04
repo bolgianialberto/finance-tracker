@@ -46,6 +46,6 @@ const expenseCategories: CategoryStats[] = [
   },
 ];
 
-export function getFinanceMock(type: "income" | "expenses") {
+export function getFinanceMock(type: "income" | "expenses" | "general") {
   return type === "income" ? incomeCategories : expenseCategories;
 }
