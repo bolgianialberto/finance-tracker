@@ -1,7 +1,7 @@
 import { TimeToggleButton } from "@/components/time-toggle-button";
 import type { ToggleVariant } from "@/components/toggle.styles";
 import { ThemedText } from "@/components/ui/themed-text";
-import { TimeRange } from "@/features/finance/models/time-range";
+import { TimeRange } from "@/models/time-range";
 import { StyleSheet, View } from "react-native";
 
 type Props = {

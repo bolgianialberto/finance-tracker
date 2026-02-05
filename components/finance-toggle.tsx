@@ -1,4 +1,4 @@
-import { ToggleButton } from "@/features/finance/components/finance-toggle-button";
+import { ToggleButton } from "@/components/finance-toggle-button";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { StyleSheet, View } from "react-native";
 import { FinanceType } from "../models/finance-type";

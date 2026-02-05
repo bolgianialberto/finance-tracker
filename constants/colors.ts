@@ -31,6 +31,15 @@ export const Colors = {
 
     selectedTimeToggleText: "#11181C",
     unselectedTimeToggleText: "#ccccccff",
+
+    income: "#19e64cff",
+    expense: "#d8e619ff",
+    gain: "#5548F9",
+    loss: "#ff0000ff",
+
+    divider: "#11181C",
+
+    barChartTextLabel: "#11181C",
   },
   dark: {
     text: "#11181C",
@@ -58,5 +67,14 @@ export const Colors = {
     unselectedToggleText: "#11181C",
     selectedTimeToggleText: "#11181C",
     unselectedTimeToggleText: "#ccccccff",
+
+    income: "#19e64cff",
+    expense: "#d8e619ff",
+    gain: "#5548F9",
+    loss: "#ff0000ff",
+
+    divider: "#11181C",
+
+    barChartTextLabel: "#11181C",
   },
 };

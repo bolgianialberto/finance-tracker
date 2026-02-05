@@ -1,10 +1,10 @@
+import { CategoryLegend } from "@/components/category-legend";
+import { FinanceDonutChart } from "@/components/finance-donut-chart";
+import { FinanceToggle } from "@/components/finance-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
-import { CategoryLegend } from "@/features/finance/components/category-legend";
-import { FinanceDonutChart } from "@/features/finance/components/finance-donut-chart";
-import { FinanceToggle } from "@/features/finance/components/finance-toggle";
-import { useFinanceData } from "@/features/finance/hooks/use-finance-data";
-import { FinanceType } from "@/features/finance/models/finance-type";
+import { useFinanceData } from "@/hooks/use-finance-data";
+import { FinanceType } from "@/models/finance-type";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

@@ -1,10 +1,7 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { Pressable, StyleSheet } from "react-native";
-import {
-  FINANCE_TOGGLE_STYLES,
-  ToggleVariant,
-} from "../../../components/toggle.styles";
-import { ThemedText } from "../../../components/ui/themed-text";
+import { FINANCE_TOGGLE_STYLES, ToggleVariant } from "./toggle.styles";
+import { ThemedText } from "./ui/themed-text";
 
 type Props = {
   label: string;

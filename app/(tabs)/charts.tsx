@@ -1,19 +1,20 @@
 import { ChartCard } from "@/components/card/ChartCard";
+import { FinanceBarChart } from "@/components/finance-bar-chart";
+import { FinanceToggle } from "@/components/finance-toggle";
 import { TimeRangeToggle } from "@/components/time-range-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
-import { FinanceToggle } from "@/features/finance/components/finance-toggle";
-import { useFinanceData } from "@/features/finance/hooks/use-finance-data";
-import { ChartType } from "@/features/finance/models/chart-type";
-import { TimeRange } from "@/features/finance/models/time-range";
+import { useBarChartData } from "@/hooks/use-bar-chart-data";
+import { ChartType } from "@/models/chart-type";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { TimeRange } from "../../models/time-range";
 
 export default function ChartScreen() {
   const [type, setType] = useState<ChartType>("general");
   const [range, setRange] = useState<TimeRange>("month");
-  const { data, total, transactions } = useFinanceData(type);
+  const chartData = useBarChartData(type, range);
 
   return (
     <SafeAreaView style={styles.externalContainer}>
@@ -32,7 +33,7 @@ export default function ChartScreen() {
         <ChartCard
           header={<TimeRangeToggle value={range} onChange={setRange} />}
         >
-          <View />
+          <FinanceBarChart data={chartData} range={range} />
         </ChartCard>
       </View>
     </SafeAreaView>
