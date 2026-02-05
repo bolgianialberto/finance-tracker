@@ -69,16 +69,6 @@ export function FinanceBarChart({
         }}
       >
         <Svg width={chartWidth} height={height}>
-          {/* asse X */}
-          <Line
-            x1={0}
-            x2={chartWidth}
-            y1={zeroY}
-            y2={zeroY}
-            stroke={axisColor}
-            strokeWidth={1}
-          />
-
           {data.map((item, index) => {
             const xStart = index * groupWidth + 20;
 
@@ -95,14 +85,6 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={incomeH}
                   fill={incomeColor}
-                  rx={4}
-                />
-                <Rect
-                  x={xStart}
-                  y={zeroY - 4}
-                  width={barWidth}
-                  height={4}
-                  fill={incomeColor}
                 />
 
                 {/* Expenses */}
@@ -111,14 +93,6 @@ export function FinanceBarChart({
                   y={zeroY - expenseH}
                   width={barWidth}
                   height={expenseH}
-                  fill={expenseColor}
-                  rx={4}
-                />
-                <Rect
-                  x={xStart + barWidth + barGap}
-                  y={zeroY - 4}
-                  width={barWidth}
-                  height={4}
                   fill={expenseColor}
                 />
 
@@ -129,16 +103,7 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={resultH}
                   fill={item.result! >= 0 ? gainColor : lossColor}
-                  rx={4}
                 />
-                <Rect
-                  x={xStart + (barWidth + barGap) * 2}
-                  y={zeroY - 4}
-                  width={barWidth}
-                  height={4}
-                  fill={item.result! >= 0 ? gainColor : lossColor}
-                />
-
                 {/* Label periodo */}
                 <SvgText
                   x={xStart + (barWidth * 3 + barGap * 2) / 2}
@@ -152,6 +117,37 @@ export function FinanceBarChart({
               </View>
             );
           })}
+
+          {data.map((_, index) => {
+            if (index === data.length - 1) return null;
+
+            const xStart = index * groupWidth + 20;
+            const barsGroupWidth = barWidth * 3 + barGap * 2;
+            const dividerX = xStart + barsGroupWidth + groupGap / 2;
+
+            return (
+              <Line
+                key={`divider-${index}`}
+                x1={dividerX}
+                x2={dividerX}
+                y1={zeroY}
+                y2={zeroY - 6}
+                stroke={axisColor}
+                strokeWidth={1}
+                strokeLinecap="round"
+              />
+            );
+          })}
+
+          {/* asse X */}
+          <Line
+            x1={0}
+            x2={chartWidth}
+            y1={zeroY}
+            y2={zeroY}
+            stroke={axisColor}
+            strokeWidth={1}
+          />
         </Svg>
       </ScrollView>
 

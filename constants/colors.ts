@@ -46,7 +46,7 @@ export const Colors = {
     background: "#fff",
     tint: tintColorDark,
     icon: "#687076",
-    tabIconDefault: "#bfc2c4ff",
+    tabIconDefault: "#9BA1A6",
     tabIconSelected: tintColorDark,
     baseCardBackground: "#fff",
 
@@ -60,11 +60,12 @@ export const Colors = {
     defaultText: "#11181C",
     lightText: "#fff",
 
-    toggleBackground: "#bfc2c4ff",
+    toggleBackground: "#ccccccff",
     selectedToggleBackground: "#E5E7EB",
-    unselectedToggleBackground: "#bfc2c4ff",
+    unselectedToggleBackground: "#ccccccff",
     selectedToggleText: "#11181C",
     unselectedToggleText: "#11181C",
+
     selectedTimeToggleText: "#11181C",
     unselectedTimeToggleText: "#ccccccff",
 
