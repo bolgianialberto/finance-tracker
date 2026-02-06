@@ -1,4 +1,5 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -25,6 +26,7 @@ export function FinanceBarChart({
   const lossColor = useThemeColor({}, "loss");
   const axisColor = useThemeColor({}, "divider");
   const [periodLabel, setPeriodLabel] = useState("");
+  const [selectedBar, setSelectedBar] = useState<SelectedBar | null>(null);
 
   const barGap = 6;
   const groupGap = 20;
@@ -49,6 +51,7 @@ export function FinanceBarChart({
     }
 
     setPeriodLabel(formatPeriodLabel(data[0].date, range));
+    setSelectedBar(null);
   }, [data, range]);
 
   return (
@@ -67,6 +70,7 @@ export function FinanceBarChart({
 
           setPeriodLabel(formatPeriodLabel(item.date, range));
         }}
+        onTouchStart={() => setSelectedBar(null)}
       >
         <Svg width={chartWidth} height={height}>
           {data.map((item, index) => {
@@ -85,6 +89,14 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={incomeH}
                   fill={incomeColor}
+                  onPress={() =>
+                    setSelectedBar({
+                      x: xStart + barWidth / 2,
+                      y: zeroY - incomeH,
+                      value: item.income,
+                      kind: "income",
+                    })
+                  }
                 />
 
                 {/* Expenses */}
@@ -94,6 +106,14 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={expenseH}
                   fill={expenseColor}
+                  onPress={() =>
+                    setSelectedBar({
+                      x: xStart + barWidth / 2,
+                      y: zeroY - expenseH,
+                      value: item.expenses,
+                      kind: "expense",
+                    })
+                  }
                 />
 
                 {/* Result (sempre sopra) */}
@@ -103,6 +123,14 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={resultH}
                   fill={item.result! >= 0 ? gainColor : lossColor}
+                  onPress={() =>
+                    setSelectedBar({
+                      x: xStart + (barWidth + barGap) * 2 + barWidth / 2,
+                      y: zeroY - resultH,
+                      value: item.result ?? 0,
+                      kind: "result",
+                    })
+                  }
                 />
                 {/* Label periodo */}
                 <SvgText
@@ -150,6 +178,24 @@ export function FinanceBarChart({
           />
         </Svg>
       </ScrollView>
+
+      {selectedBar && (
+        <View
+          pointerEvents="none"
+          style={[
+            styles.tooltip,
+            {
+              left: Math.max(8, selectedBar.x - 40),
+              top: selectedBar.y - 32 - 4,
+            },
+          ]}
+        >
+          <ThemedText style={[styles.tooltipText, { color: "#11181C" }]}>
+            {selectedBar.kind === "result" && selectedBar.value > 0 ? "+" : ""}
+            {selectedBar.value.toLocaleString("it-IT")} €
+          </ThemedText>
+        </View>
+      )}
 
       <View style={styles.periodLabelContainer}>
         <ThemedText
@@ -226,5 +272,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 12,
     opacity: 0.6,
+  },
+  tooltip: {
+    position: "absolute",
+    backgroundColor: "#E5E7EB",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    zIndex: 10,
+    marginBottom: 4,
+  },
+  tooltipText: {
+    fontSize: 12,
+    fontWeight: "600",
   },
 });
