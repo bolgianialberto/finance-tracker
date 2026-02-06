@@ -24,8 +24,9 @@ export function TimeToggleButton({ label, variant, onPress }: Props) {
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 4,
-    paddingHorizontal: 6,
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
     fontSize: 13,

@@ -28,7 +28,7 @@ export function FinanceBarChart({
 
   const barGap = 6;
   const groupGap = 20;
-  const chartHeight = height - 50;
+  const chartHeight = height - 32;
   const zeroY = chartHeight;
 
   const maxValue = Math.max(
@@ -218,9 +218,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   periodLabelContainer: {
-    height: 20,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 12,
   },
   periodLabel: {
     textAlign: "center",

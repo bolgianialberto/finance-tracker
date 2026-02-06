@@ -1,6 +1,5 @@
 import { TimeToggleButton } from "@/components/time-toggle-button";
 import type { ToggleVariant } from "@/components/toggle.styles";
-import { ThemedText } from "@/components/ui/themed-text";
 import { TimeRange } from "@/models/time-range";
 import { StyleSheet, View } from "react-native";
 
@@ -21,13 +20,18 @@ export function TimeRangeToggle({ value, onChange }: Props) {
         return (
           <View key={option} style={styles.item}>
             <TimeToggleButton
-              label={option.toUpperCase()}
+              label={option}
               variant={variant}
               onPress={() => onChange(option)}
             />
 
             {index < OPTIONS.length - 1 && (
-              <ThemedText style={styles.separator}>|</ThemedText>
+              <View
+                style={[
+                  styles.divider,
+                  { backgroundColor: "#11181C", opacity: 0.3 },
+                ]}
+              />
             )}
           </View>
         );
@@ -39,15 +43,25 @@ export function TimeRangeToggle({ value, onChange }: Props) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    justifyContent: "center",
     width: "100%",
-  },
-  item: {
-    flexDirection: "row",
     alignItems: "center",
   },
+  item: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   separator: {
-    marginHorizontal: 8,
+    position: "absolute",
+    right: -8,
     opacity: 0.3,
+  },
+  divider: {
+    position: "absolute",
+    right: 0,
+    width: 1,
+    height: 16,
+    opacity: 0.25,
   },
 });
