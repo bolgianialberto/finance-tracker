@@ -23,9 +23,9 @@ export const Colors = {
     defaultText: "#11181C",
     lightText: "#fff",
 
-    toggleBackground: "#ccccccff",
-    selectedToggleBackground: "#E5E7EB",
-    unselectedToggleBackground: "#ccccccff",
+    toggleBackground: "#e2e1e1ff",
+    selectedToggleBackground: "#f9fafcff",
+    unselectedToggleBackground: "#e2e1e1ff",
     selectedToggleText: "#11181C",
     unselectedToggleText: "#11181C",
 

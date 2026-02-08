@@ -18,7 +18,7 @@ export function FinanceBarChart({
   data,
   range,
   height = 180,
-  barWidth = 14,
+  barWidth = 22,
 }: Props) {
   const incomeColor = useThemeColor({}, "income");
   const expenseColor = useThemeColor({}, "expense");
@@ -27,9 +27,10 @@ export function FinanceBarChart({
   const axisColor = useThemeColor({}, "divider");
   const [periodLabel, setPeriodLabel] = useState("");
   const [selectedBar, setSelectedBar] = useState<SelectedBar | null>(null);
+  const [scrollX, setScrollX] = useState(0);
 
-  const barGap = 6;
-  const groupGap = 20;
+  const barGap = 10;
+  const groupGap = 16;
   const chartHeight = height - 32;
   const zeroY = chartHeight;
 
@@ -61,9 +62,10 @@ export function FinanceBarChart({
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
         onScroll={(e) => {
-          const scrollX = e.nativeEvent.contentOffset.x;
+          const currentScrollX = e.nativeEvent.contentOffset.x;
+          setScrollX(currentScrollX);
 
-          const centerIndex = Math.round(scrollX / groupWidth);
+          const centerIndex = Math.round(currentScrollX / groupWidth);
 
           const item = data[centerIndex];
           if (!item) return;
@@ -80,8 +82,16 @@ export function FinanceBarChart({
             const expenseH = scaleY(item.expenses);
             const resultH = scaleY(item.result ?? 0);
 
+            // Area cliccabile più grande: 6px oltre i bordi della barra
+            const hitPaddingX = 6;
+            const hitPaddingY = 6;
+            const expensesX = xStart + barWidth + barGap;
+            const resultX = xStart + (barWidth + barGap) * 2;
+
             return (
               <View key={item.date.toISOString()}>
+                {/* BARRE VISIVE */}
+
                 {/* Income */}
                 <Rect
                   x={xStart}
@@ -89,6 +99,36 @@ export function FinanceBarChart({
                   width={barWidth}
                   height={incomeH}
                   fill={incomeColor}
+                />
+
+                {/* Expenses */}
+                <Rect
+                  x={expensesX}
+                  y={zeroY - expenseH}
+                  width={barWidth}
+                  height={expenseH}
+                  fill={expenseColor}
+                />
+
+                {/* Result */}
+                <Rect
+                  x={resultX}
+                  y={zeroY - resultH}
+                  width={barWidth}
+                  height={resultH}
+                  fill={item.result! >= 0 ? gainColor : lossColor}
+                />
+
+                {/* AREE CLICCABILI (sopra le barre) */}
+
+                {/* Income - area cliccabile */}
+                <Rect
+                  x={xStart - hitPaddingX}
+                  y={zeroY - incomeH - hitPaddingY}
+                  width={barWidth + hitPaddingX * 2}
+                  height={incomeH + hitPaddingY * 2}
+                  fill="#000"
+                  fillOpacity={0}
                   onPress={() =>
                     setSelectedBar({
                       x: xStart + barWidth / 2,
@@ -99,16 +139,17 @@ export function FinanceBarChart({
                   }
                 />
 
-                {/* Expenses */}
+                {/* Expenses - area cliccabile */}
                 <Rect
-                  x={xStart + barWidth + barGap}
-                  y={zeroY - expenseH}
-                  width={barWidth}
-                  height={expenseH}
-                  fill={expenseColor}
+                  x={expensesX - hitPaddingX}
+                  y={zeroY - expenseH - hitPaddingY}
+                  width={barWidth + hitPaddingX * 2}
+                  height={expenseH + hitPaddingY * 2}
+                  fill="#000"
+                  fillOpacity={0}
                   onPress={() =>
                     setSelectedBar({
-                      x: xStart + barWidth / 2,
+                      x: expensesX + barWidth / 2,
                       y: zeroY - expenseH,
                       value: item.expenses,
                       kind: "expense",
@@ -116,22 +157,24 @@ export function FinanceBarChart({
                   }
                 />
 
-                {/* Result (sempre sopra) */}
+                {/* Result - area cliccabile */}
                 <Rect
-                  x={xStart + (barWidth + barGap) * 2}
-                  y={zeroY - resultH}
-                  width={barWidth}
-                  height={resultH}
-                  fill={item.result! >= 0 ? gainColor : lossColor}
+                  x={resultX - hitPaddingX}
+                  y={zeroY - resultH - hitPaddingY}
+                  width={barWidth + hitPaddingX * 2}
+                  height={resultH + hitPaddingY * 2}
+                  fill="#000"
+                  fillOpacity={0}
                   onPress={() =>
                     setSelectedBar({
-                      x: xStart + (barWidth + barGap) * 2 + barWidth / 2,
+                      x: resultX + barWidth / 2,
                       y: zeroY - resultH,
                       value: item.result ?? 0,
                       kind: "result",
                     })
                   }
                 />
+
                 {/* Label periodo */}
                 <SvgText
                   x={xStart + (barWidth * 3 + barGap * 2) / 2}
@@ -185,8 +228,10 @@ export function FinanceBarChart({
           style={[
             styles.tooltip,
             {
-              left: Math.max(8, selectedBar.x - 40),
-              top: selectedBar.y - 32 - 4,
+              // Centrato sulla barra, compensando lo scroll
+              left: selectedBar.x - 40 - scrollX,
+              // 8px sopra la colonna
+              top: selectedBar.y - 36,
             },
           ]}
         >
@@ -280,7 +325,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
     zIndex: 10,
-    marginBottom: 4,
   },
   tooltipText: {
     fontSize: 12,
