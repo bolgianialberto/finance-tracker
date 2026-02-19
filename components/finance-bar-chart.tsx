@@ -1,7 +1,7 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Svg, { Line, Rect, Text as SvgText } from "react-native-svg";
 import { FinanceBarModel } from "../models/finance-bar-model";
@@ -12,6 +12,8 @@ type Props = {
   range: TimeRange;
   height?: number;
   barWidth?: number;
+  onLoadMore?: (direction: "left" | "right") => void;
+  canLoadMore?: { left: boolean; right: boolean };
 };
 
 export function FinanceBarChart({
@@ -19,6 +21,8 @@ export function FinanceBarChart({
   range,
   height = 180,
   barWidth = 22,
+  onLoadMore,
+  canLoadMore = { left: false, right: false },
 }: Props) {
   const incomeColor = useThemeColor({}, "income");
   const expenseColor = useThemeColor({}, "expense");
@@ -28,6 +32,10 @@ export function FinanceBarChart({
   const [periodLabel, setPeriodLabel] = useState("");
   const [selectedBar, setSelectedBar] = useState<SelectedBar | null>(null);
   const [scrollX, setScrollX] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const previousDataLength = useRef(data.length);
+  const hasTriggeredLeft = useRef(false);
+  const hasTriggeredRight = useRef(false);
 
   const barGap = 10;
   const groupGap = 16;
@@ -44,6 +52,7 @@ export function FinanceBarChart({
 
   const groupWidth = barWidth * 3 + barGap * 2 + groupGap;
   const chartWidth = data.length * groupWidth + 40;
+  const LOAD_THRESHOLD = groupWidth * 3;
 
   useEffect(() => {
     if (!data.length) {
@@ -51,27 +60,85 @@ export function FinanceBarChart({
       return;
     }
 
-    setPeriodLabel(formatPeriodLabel(data[0].date, range));
+    // Resetta lo scroll alla fine quando cambiano i dati o il range
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+    }, 100);
+
+    previousDataLength.current = data.length;
+    setPeriodLabel(formatPeriodLabel(data[data.length - 1].date, range));
     setSelectedBar(null);
-  }, [data, range]);
+  }, [data.length, range]); // Aggiungi range come dipendenza
+
+  // Gestisci il caricamento progressivo (separato dal reset iniziale)
+  useEffect(() => {
+    // Quando vengono caricati nuovi dati a sinistra, mantieni la posizione
+    if (
+      data.length > previousDataLength.current &&
+      scrollX < LOAD_THRESHOLD * 2
+    ) {
+      const addedItems = data.length - previousDataLength.current;
+      const offsetAdjustment = addedItems * groupWidth;
+
+      setTimeout(() => {
+        scrollViewRef.current?.scrollTo({
+          x: scrollX + offsetAdjustment,
+          animated: false,
+        });
+      }, 50);
+
+      previousDataLength.current = data.length;
+    }
+  }, [data.length]);
+
+  const handleScroll = (e: any) => {
+    const currentScrollX = e.nativeEvent.contentOffset.x;
+    const contentWidth = e.nativeEvent.contentSize.width;
+    const layoutWidth = e.nativeEvent.layoutMeasurement.width;
+
+    setScrollX(currentScrollX);
+
+    const centerIndex = Math.round(currentScrollX / groupWidth);
+    const item = data[centerIndex];
+    if (item) {
+      setPeriodLabel(formatPeriodLabel(item.date, range));
+    }
+
+    // Load more a sinistra
+    if (
+      currentScrollX < LOAD_THRESHOLD &&
+      canLoadMore.left &&
+      !hasTriggeredLeft.current
+    ) {
+      hasTriggeredLeft.current = true;
+      onLoadMore?.("left");
+      setTimeout(() => {
+        hasTriggeredLeft.current = false;
+      }, 500);
+    }
+
+    // Load more a destra
+    if (
+      currentScrollX + layoutWidth > contentWidth - LOAD_THRESHOLD &&
+      canLoadMore.right &&
+      !hasTriggeredRight.current
+    ) {
+      hasTriggeredRight.current = true;
+      onLoadMore?.("right");
+      setTimeout(() => {
+        hasTriggeredRight.current = false;
+      }, 500);
+    }
+  };
 
   return (
     <View>
       <ScrollView
+        ref={scrollViewRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScroll={(e) => {
-          const currentScrollX = e.nativeEvent.contentOffset.x;
-          setScrollX(currentScrollX);
-
-          const centerIndex = Math.round(currentScrollX / groupWidth);
-
-          const item = data[centerIndex];
-          if (!item) return;
-
-          setPeriodLabel(formatPeriodLabel(item.date, range));
-        }}
+        onScroll={handleScroll}
         onTouchStart={() => setSelectedBar(null)}
       >
         <Svg width={chartWidth} height={height}>
@@ -82,7 +149,6 @@ export function FinanceBarChart({
             const expenseH = scaleY(item.expenses);
             const resultH = scaleY(item.result ?? 0);
 
-            // Area cliccabile più grande: 6px oltre i bordi della barra
             const hitPaddingX = 6;
             const hitPaddingY = 6;
             const expensesX = xStart + barWidth + barGap;
@@ -90,8 +156,6 @@ export function FinanceBarChart({
 
             return (
               <View key={item.date.toISOString()}>
-                {/* BARRE VISIVE */}
-
                 {/* Income */}
                 <Rect
                   x={xStart}
@@ -118,8 +182,6 @@ export function FinanceBarChart({
                   height={resultH}
                   fill={item.result! >= 0 ? gainColor : lossColor}
                 />
-
-                {/* AREE CLICCABILI (sopra le barre) */}
 
                 {/* Income - area cliccabile */}
                 <Rect
@@ -228,9 +290,7 @@ export function FinanceBarChart({
           style={[
             styles.tooltip,
             {
-              // Centrato sulla barra, compensando lo scroll
               left: selectedBar.x - 40 - scrollX,
-              // 8px sopra la colonna
               top: selectedBar.y - 36,
             },
           ]}

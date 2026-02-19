@@ -14,7 +14,7 @@ import { TimeRange } from "../../models/time-range";
 export default function ChartScreen() {
   const [type, setType] = useState<ChartType>("general");
   const [range, setRange] = useState<TimeRange>("month");
-  const chartData = useBarChartData(type, range);
+  const { data, loadMore, canLoadMore } = useBarChartData(type, range);
 
   return (
     <SafeAreaView style={styles.externalContainer}>
@@ -33,7 +33,12 @@ export default function ChartScreen() {
         <ChartCard
           header={<TimeRangeToggle value={range} onChange={setRange} />}
         >
-          <FinanceBarChart data={chartData} range={range} />
+          <FinanceBarChart
+            data={data}
+            range={range}
+            onLoadMore={loadMore}
+            canLoadMore={canLoadMore}
+          />
         </ChartCard>
       </View>
     </SafeAreaView>
