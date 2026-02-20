@@ -3,6 +3,7 @@ import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Svg, { Line, Rect, Text as SvgText } from "react-native-svg";
 import { FinanceBarModel } from "../models/finance-bar-model";
 import { ThemedText } from "./ui/themed-text";
@@ -60,15 +61,15 @@ export function FinanceBarChart({
       return;
     }
 
-    // Resetta lo scroll alla fine quando cambiano i dati o il range
+    // Resetta lo scroll alla fine quando cambiano i dati o il range con animazione fluida
     setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: false });
-    }, 100);
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 150); // Piccolo delay per far partire prima l'animazione delle barre
 
     previousDataLength.current = data.length;
     setPeriodLabel(formatPeriodLabel(data[data.length - 1].date, range));
     setSelectedBar(null);
-  }, [data.length, range]); // Aggiungi range come dipendenza
+  }, [data.length, range, data]);
 
   // Gestisci il caricamento progressivo (separato dal reset iniziale)
   useEffect(() => {
@@ -89,7 +90,7 @@ export function FinanceBarChart({
 
       previousDataLength.current = data.length;
     }
-  }, [data.length]);
+  }, [data.length, scrollX, LOAD_THRESHOLD, groupWidth]);
 
   const handleScroll = (e: any) => {
     const currentScrollX = e.nativeEvent.contentOffset.x;
@@ -156,41 +157,13 @@ export function FinanceBarChart({
 
             return (
               <View key={item.date.toISOString()}>
-                {/* Income */}
-                <Rect
+                {/* Income Bar */}
+                <AnimatedBar
                   x={xStart}
-                  y={zeroY - incomeH}
+                  targetHeight={incomeH}
                   width={barWidth}
-                  height={incomeH}
-                  fill={incomeColor}
-                />
-
-                {/* Expenses */}
-                <Rect
-                  x={expensesX}
-                  y={zeroY - expenseH}
-                  width={barWidth}
-                  height={expenseH}
-                  fill={expenseColor}
-                />
-
-                {/* Result */}
-                <Rect
-                  x={resultX}
-                  y={zeroY - resultH}
-                  width={barWidth}
-                  height={resultH}
-                  fill={item.result! >= 0 ? gainColor : lossColor}
-                />
-
-                {/* Income - area cliccabile */}
-                <Rect
-                  x={xStart - hitPaddingX}
-                  y={zeroY - incomeH - hitPaddingY}
-                  width={barWidth + hitPaddingX * 2}
-                  height={incomeH + hitPaddingY * 2}
-                  fill="#000"
-                  fillOpacity={0}
+                  color={incomeColor}
+                  zeroY={zeroY}
                   onPress={() =>
                     setSelectedBar({
                       x: xStart + barWidth / 2,
@@ -201,14 +174,13 @@ export function FinanceBarChart({
                   }
                 />
 
-                {/* Expenses - area cliccabile */}
-                <Rect
-                  x={expensesX - hitPaddingX}
-                  y={zeroY - expenseH - hitPaddingY}
-                  width={barWidth + hitPaddingX * 2}
-                  height={expenseH + hitPaddingY * 2}
-                  fill="#000"
-                  fillOpacity={0}
+                {/* Expenses Bar */}
+                <AnimatedBar
+                  x={expensesX}
+                  targetHeight={expenseH}
+                  width={barWidth}
+                  color={expenseColor}
+                  zeroY={zeroY}
                   onPress={() =>
                     setSelectedBar({
                       x: expensesX + barWidth / 2,
@@ -219,14 +191,13 @@ export function FinanceBarChart({
                   }
                 />
 
-                {/* Result - area cliccabile */}
-                <Rect
-                  x={resultX - hitPaddingX}
-                  y={zeroY - resultH - hitPaddingY}
-                  width={barWidth + hitPaddingX * 2}
-                  height={resultH + hitPaddingY * 2}
-                  fill="#000"
-                  fillOpacity={0}
+                {/* Result Bar */}
+                <AnimatedBar
+                  x={resultX}
+                  targetHeight={resultH}
+                  width={barWidth}
+                  color={item.result! >= 0 ? gainColor : lossColor}
+                  zeroY={zeroY}
                   onPress={() =>
                     setSelectedBar({
                       x: resultX + barWidth / 2,
@@ -285,8 +256,10 @@ export function FinanceBarChart({
       </ScrollView>
 
       {selectedBar && (
-        <View
+        <Animated.View
           pointerEvents="none"
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(150)}
           style={[
             styles.tooltip,
             {
@@ -299,7 +272,7 @@ export function FinanceBarChart({
             {selectedBar.kind === "result" && selectedBar.value > 0 ? "+" : ""}
             {selectedBar.value.toLocaleString("it-IT")} €
           </ThemedText>
-        </View>
+        </Animated.View>
       )}
 
       <View style={styles.periodLabelContainer}>
@@ -319,6 +292,77 @@ export function FinanceBarChart({
         <LegendItem color={lossColor} label="Loss" />
       </View>
     </View>
+  );
+}
+
+function AnimatedBar({
+  x,
+  targetHeight,
+  width,
+  color,
+  zeroY,
+  onPress,
+}: {
+  x: number;
+  targetHeight: number;
+  width: number;
+  color: string;
+  zeroY: number;
+  onPress?: () => void;
+}) {
+  const [currentHeight, setCurrentHeight] = useState(0);
+  const hitPaddingX = 6;
+  const hitPaddingY = 6;
+
+  useEffect(() => {
+    // Animazione con setTimeout per smooth transition
+    const duration = 600;
+    const steps = 30;
+    const increment = targetHeight / steps;
+    let current = 0;
+
+    const interval = setInterval(() => {
+      current += increment;
+      if (current >= targetHeight) {
+        setCurrentHeight(targetHeight);
+        clearInterval(interval);
+      } else {
+        // Easing cubic-out
+        const progress = current / targetHeight;
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setCurrentHeight(targetHeight * eased);
+      }
+    }, duration / steps);
+
+    return () => clearInterval(interval);
+  }, [targetHeight]);
+
+  const displayHeight = Math.max(0, currentHeight);
+
+  return (
+    <>
+      {/* Barra visibile */}
+      <Rect
+        x={x}
+        y={zeroY - displayHeight}
+        width={width}
+        height={displayHeight}
+        fill={color}
+      />
+
+      {/* Area cliccabile */}
+      {onPress && displayHeight > 0 && (
+        <Rect
+          x={x - hitPaddingX}
+          y={zeroY - displayHeight - hitPaddingY}
+          width={width + hitPaddingX * 2}
+          height={displayHeight + hitPaddingY * 2}
+          fill="#000"
+          fillOpacity={0}
+          onPress={onPress}
+        />
+      )}
+    </>
   );
 }
 
