@@ -1,4 +1,4 @@
-import { CategoryAmount } from "../models/category-amount";
-import { FinanceType } from "../models/finance-type";
+import { CategoryAmount } from "./category-amount";
+import { FinanceType } from "./finance-type";
 
 export type FinanceData = Record<FinanceType, CategoryAmount[]>;
