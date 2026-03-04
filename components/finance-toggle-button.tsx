@@ -1,4 +1,4 @@
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { Pressable, StyleSheet } from "react-native";
 import { FINANCE_TOGGLE_STYLES, ToggleVariant } from "../variant/toggle.styles";
 import { ThemedText } from "./ui/themed-text";
@@ -12,8 +12,9 @@ type Props = {
 export function ToggleButton({ label, variant, onPress }: Props) {
   const styleTokens = FINANCE_TOGGLE_STYLES[variant];
 
-  const backgroundColor = useThemeColor({}, styleTokens.background);
-  const textColor = useThemeColor({}, styleTokens.text);
+  const { colors } = useTheme();
+  const backgroundColor = colors[styleTokens.background];
+  const textColor = colors[styleTokens.text];
 
   return (
     <Pressable

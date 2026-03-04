@@ -1,4 +1,4 @@
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
 import { useEffect, useRef, useState } from "react";
@@ -25,11 +25,14 @@ export function FinanceBarChart({
   onLoadMore,
   canLoadMore = { left: false, right: false },
 }: Props) {
-  const incomeColor = useThemeColor({}, "income");
-  const expenseColor = useThemeColor({}, "expense");
-  const gainColor = useThemeColor({}, "gain");
-  const lossColor = useThemeColor({}, "loss");
-  const axisColor = useThemeColor({}, "divider");
+  const { colors } = useTheme();
+  const incomeColor = colors.income;
+  const expenseColor = colors.expense;
+  const gainColor = colors.gain;
+  const lossColor = colors.loss;
+  const axisColor = colors.divider;
+  const barChartTextLabel = colors.text;
+
   const [periodLabel, setPeriodLabel] = useState("");
   const [selectedBar, setSelectedBar] = useState<SelectedBar | null>(null);
   const [scrollX, setScrollX] = useState(0);
@@ -276,10 +279,7 @@ export function FinanceBarChart({
       )}
 
       <View style={styles.periodLabelContainer}>
-        <ThemedText
-          darkColor={useThemeColor({}, "barChartTextLabel")}
-          style={styles.periodLabel}
-        >
+        <ThemedText color={barChartTextLabel} style={styles.periodLabel}>
           {periodLabel}
         </ThemedText>
       </View>

@@ -1,5 +1,5 @@
 import { ToggleButton } from "@/components/finance-toggle-button";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { FinanceType } from "../models/finance-type";
 
@@ -18,7 +18,8 @@ export function FinanceToggle({
   getIncome,
   getExpenses,
 }: Props) {
-  const bg = useThemeColor({}, "toggleBackground");
+  const { colors } = useTheme();
+  const bg = colors.toggleBackground;
 
   return (
     <View style={[styles.container, { backgroundColor: bg }]}>

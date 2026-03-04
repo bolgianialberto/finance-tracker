@@ -1,4 +1,4 @@
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet } from "react-native";
 import { ThemedView } from "../ui/themed-view";
 
@@ -8,7 +8,8 @@ type Props = {
 };
 
 export function BaseCard({ backgroundColor, children }: Props) {
-  const defaultBg = useThemeColor({}, "baseCardBackground");
+  const { colors } = useTheme();
+  const defaultBg = colors.baseCardBackground;
 
   return (
     <ThemedView

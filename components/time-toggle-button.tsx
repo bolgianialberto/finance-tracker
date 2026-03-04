@@ -1,5 +1,5 @@
 import { ThemedText } from "@/components/ui/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { TIME_TOGGLE_STYLES, ToggleVariant } from "@/variant/toggle.styles";
 import { Pressable, StyleSheet } from "react-native";
 
@@ -11,7 +11,8 @@ type Props = {
 
 export function TimeToggleButton({ label, variant, onPress }: Props) {
   const styleTokens = TIME_TOGGLE_STYLES[variant];
-  const textColor = useThemeColor({}, styleTokens.text);
+  const { colors } = useTheme();
+  const textColor = colors[styleTokens.text];
 
   return (
     <Pressable onPress={onPress} style={styles.button}>

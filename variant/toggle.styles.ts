@@ -1,34 +1,34 @@
-import type { ColorToken } from "@/constants/colors";
+import { Colors } from "@/constants/theme";
 
 export type ToggleVariant = "selected" | "unselected";
 
 export const FINANCE_TOGGLE_STYLES: Record<
   ToggleVariant,
   {
-    background: ColorToken;
-    text: ColorToken;
+    background: keyof Colors;
+    text: keyof Colors;
   }
 > = {
   selected: {
-    background: "selectedToggleBackground",
-    text: "selectedToggleText",
+    background: "toggleSelectedBg",
+    text: "toggleSelectedText",
   },
   unselected: {
-    background: "unselectedToggleBackground",
-    text: "unselectedToggleText",
+    background: "toggleUnselectedBg",
+    text: "toggleUnselectedText",
   },
 };
 
 export const TIME_TOGGLE_STYLES: Record<
   ToggleVariant,
   {
-    text: ColorToken;
+    text: keyof Colors;
   }
 > = {
   selected: {
-    text: "selectedTimeToggleText",
+    text: "toggleTimeSelectedText",
   },
   unselected: {
-    text: "unselectedTimeToggleText",
+    text: "toggleTimeUnselectedText",
   },
 };

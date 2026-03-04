@@ -176,6 +176,18 @@ const colors = {
   // decorativi
   divider: palette.black,
   barChartLabel: palette.black,
+
+  // cards
+  baseCardBackground: palette.white,
+
+  // bar
+  income: palette.green,
+  expense: palette.yellow,
+  gain: palette.purple,
+  loss: palette.red,
+
+  // toggle
+  toggleBackground: palette.greyBg,
 } as const;
 
 // ─────────────────────────────────────────────
