@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getFinanceMock } from "../data/finance.mock";
-import { mockTransactions } from "../data/transactions.mock";
+import { getFinanceMock } from "../mock/finance.mock";
+import { mockTransactions } from "../mock/transactions.mock";
 import { CategoryStats } from "../models/category-stats";
 import type { FinanceType } from "../models/finance-type";
 import { Transaction } from "../models/transaction";

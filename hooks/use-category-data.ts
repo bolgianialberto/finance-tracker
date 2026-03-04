@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { mockCategories } from "../data/category.mock";
+import { mockCategories } from "../mock/category.mock";
 import { Category } from "../models/category";
 
 export function useCategoriesData() {

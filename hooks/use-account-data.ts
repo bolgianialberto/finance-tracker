@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { mockAccounts } from "../data/settings.mock";
+import { mockAccounts } from "../mock/settings.mock";
 import { Account } from "../models/account";
 
 export function useSettingsData() {
