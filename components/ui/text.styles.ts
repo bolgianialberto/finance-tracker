@@ -1,45 +1,59 @@
+import { theme } from "@/constants/theme";
 import { TextStyle } from "react-native";
 
 export type TextVariant =
   | "default"
   | "caption"
   | "captionBold"
-  | "title"
   | "defaultSemiBold"
+  | "title"
   | "subtitle"
   | "link";
 
 export const TEXT_STYLES: Record<TextVariant, TextStyle> = {
   default: {
-    fontSize: 16,
+    fontSize: theme.typography.size.base, // 16
     lineHeight: 24,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.text,
   },
   caption: {
-    fontSize: 12,
+    fontSize: theme.typography.size.sm, // 12
     lineHeight: 24,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.textMuted,
   },
   captionBold: {
-    fontSize: 12,
+    fontSize: theme.typography.size.sm, // 12
     lineHeight: 24,
-    fontWeight: "600",
+    fontWeight: theme.typography.weight.semibold,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.textMuted,
   },
   defaultSemiBold: {
-    fontSize: 16,
+    fontSize: theme.typography.size.base, // 16
     lineHeight: 24,
-    fontWeight: "600",
+    fontWeight: theme.typography.weight.semibold,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.text,
   },
   title: {
-    fontSize: 32,
-    fontWeight: "bold",
+    fontSize: theme.typography.size.h1, // 32
     lineHeight: 32,
+    fontWeight: theme.typography.weight.bold,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.text,
   },
   subtitle: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontSize: theme.typography.size.xl, // 20
+    fontWeight: theme.typography.weight.bold,
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.text,
   },
   link: {
+    fontSize: theme.typography.size.base, // 16
     lineHeight: 30,
-    fontSize: 16,
-    color: "#0a7ea4",
+    fontFamily: theme.typography.family.sans,
+    color: theme.colors.primary,
   },
 };
