@@ -1,8 +1,8 @@
 import { ThemedText } from "@/components/ui/themed-text";
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
+import { CARD_STYLES, CardVariant } from "../../variant/card.styles";
 import { BaseCard } from "./BaseCard";
-import { CARD_STYLES, CardVariant } from "./card.styles";
 
 type Props = {
   title: string;
@@ -19,26 +19,27 @@ export function InfoCard({
   vertical,
   variant = "default",
 }: Props) {
-  const styleTokens = CARD_STYLES[variant];
+  const { colors } = useTheme();
+  const cardStyle = CARD_STYLES[variant];
 
-  const backgroundColor = useThemeColor({}, styleTokens.background);
-  const textColor = useThemeColor({}, styleTokens.text);
+  const backgroundColor = colors[cardStyle.background];
+  const textColor = colors[cardStyle.text];
 
   return (
     <BaseCard backgroundColor={backgroundColor}>
       <View
         style={[vertical ? styles.headerVertical : styles.headerHorizontal]}
       >
-        <ThemedText lightColor={textColor} type="default">
+        <ThemedText type="default" color={textColor}>
           {title}
         </ThemedText>
       </View>
 
-      <ThemedText lightColor={textColor} style={styles.value} type="title">
+      <ThemedText style={styles.value} type="title" color={textColor}>
         ${value}
       </ThemedText>
 
-      <ThemedText lightColor={textColor} type="caption">
+      <ThemedText type="caption" color={textColor}>
         {caption}
       </ThemedText>
     </BaseCard>

@@ -1,37 +1,37 @@
-import type { ColorToken } from "@/constants/colors";
+import { Colors } from "@/constants/theme";
 
 export type CardVariant = "default" | "primary" | "success" | "danger";
 
 export const CARD_STYLES: Record<
   CardVariant,
   {
-    background: ColorToken;
-    text: ColorToken;
-    iconBg: ColorToken;
-    icon: ColorToken;
+    background: keyof Colors;
+    text: keyof Colors;
+    iconBg: keyof Colors;
+    icon: keyof Colors;
   }
 > = {
   default: {
-    background: "baseCardBackground",
+    background: "backgroundCard",
     text: "text",
     iconBg: "primarySoft",
     icon: "primary",
   },
   primary: {
     background: "primary",
-    text: "lightText",
+    text: "textLight",
     iconBg: "primary",
     icon: "background",
   },
   success: {
-    background: "baseCardBackground",
-    text: "defaultText",
+    background: "backgroundCard",
+    text: "text",
     iconBg: "successSoft",
     icon: "success",
   },
   danger: {
-    background: "baseCardBackground",
-    text: "defaultText",
+    background: "backgroundCard",
+    text: "text",
     iconBg: "dangerSoft",
     icon: "danger",
   },

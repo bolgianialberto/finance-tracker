@@ -1,6 +1,6 @@
-import { TIME_TOGGLE_STYLES, ToggleVariant } from "@/components/toggle.styles";
 import { ThemedText } from "@/components/ui/themed-text";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { TIME_TOGGLE_STYLES, ToggleVariant } from "@/variant/toggle.styles";
 import { Pressable, StyleSheet } from "react-native";
 
 type Props = {
