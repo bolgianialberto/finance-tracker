@@ -82,6 +82,7 @@ const spacing = {
   xxs: 2,
   xs: 4,
   sm: 8,
+  m: 12,
   md: 16,
   lg: 24,
   xl: 32,
@@ -152,6 +153,7 @@ const colors = {
   background: palette.white,
   backgroundCard: palette.white,
   backgroundMuted: palette.offWhite,
+  transLegendBackground: palette.greyBgAlt,
 
   // icone e tab bar
   icon: palette.grey,
@@ -188,6 +190,10 @@ const colors = {
 
   // toggle
   toggleBackground: palette.greyBg,
+
+  // divider
+  settingDivider: palette.greyBgAlt,
+  transDivider: palette.greyBgAlt,
 } as const;
 
 // ─────────────────────────────────────────────

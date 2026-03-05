@@ -4,6 +4,7 @@ import { FinanceToggle } from "@/components/finance-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { useFinanceData } from "@/hooks/use-finance-data";
+import { useTheme } from "@/hooks/use-theme";
 import { FinanceType } from "@/models/finance-type";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -23,13 +24,24 @@ export default function TransactionsScreen() {
     );
   };
 
+  const { spacing, colors } = useTheme();
+
   return (
     <SafeAreaView style={styles.externalContainer} edges={["top"]}>
-      <View style={styles.header}>
+      <View
+        style={[
+          {
+            paddingHorizontal: spacing.md,
+            paddingTop: spacing.sm,
+            paddingBottom: spacing.xs,
+            gap: spacing.xs,
+          },
+        ]}
+      >
         <ThemedText type="subtitle">Transactions</ThemedText>
         <MonthLabel />
       </View>
-      <View style={styles.container}>
+      <View style={[{ padding: spacing.md, gap: spacing.md }]}>
         <FinanceToggle
           value={type}
           onChange={setType}
@@ -37,15 +49,38 @@ export default function TransactionsScreen() {
           getIncome={true}
           getExpenses={true}
         />
-        <View style={styles.divider} />
+        <View
+          style={[
+            styles.divider,
+            {
+              backgroundColor: colors.transDivider,
+            },
+          ]}
+        />
         <View style={styles.chartContainer}>
           <FinanceDonutChart data={data} total={total} />
         </View>
       </View>
-      <View style={styles.divider} />
-      <View style={styles.legendContainer}>
+      <View
+        style={[
+          styles.divider,
+          {
+            backgroundColor: colors.transDivider,
+          },
+        ]}
+      />
+      <View
+        style={[
+          styles.legendContainer,
+          {
+            backgroundColor: colors.transLegendBackground,
+          },
+        ]}
+      >
         <ScrollView
-          contentContainerStyle={styles.legendContent}
+          contentContainerStyle={[
+            { paddingHorizontal: spacing.md, paddingBottom: spacing.m },
+          ]}
           showsVerticalScrollIndicator={false}
         >
           <CategoryLegend
@@ -61,30 +96,14 @@ export default function TransactionsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
-    gap: 4,
-  },
   externalContainer: {
     flex: 1,
   },
-  container: {
-    padding: 16,
-    gap: 16,
-  },
   divider: {
     height: 1,
-    backgroundColor: "#E5E7EB",
   },
   legendContainer: {
-    flex: 1, // 🔥 prende tutto lo spazio rimasto
-    backgroundColor: "#E5E7EB",
-  },
-  legendContent: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    flex: 1,
   },
   chartContainer: {
     alignItems: "center",

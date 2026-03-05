@@ -5,6 +5,7 @@ import { TimeRangeToggle } from "@/components/time-range-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { useBarChartData } from "@/hooks/use-bar-chart-data";
+import { useTheme } from "@/hooks/use-theme";
 import { ChartType } from "@/models/chart-type";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -16,13 +17,31 @@ export default function ChartScreen() {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, loadMore, canLoadMore } = useBarChartData(type, range);
 
+  const { spacing } = useTheme();
+
   return (
     <SafeAreaView style={styles.externalContainer}>
-      <View style={styles.header}>
+      <View
+        style={[
+          {
+            paddingHorizontal: spacing.md,
+            paddingTop: spacing.sm,
+            paddingBottom: spacing.xs,
+            gap: spacing.xs,
+          },
+        ]}
+      >
         <ThemedText type="subtitle">Charts</ThemedText>
         <MonthLabel />
       </View>
-      <View style={styles.container}>
+      <View
+        style={[
+          {
+            padding: spacing.md,
+            gap: spacing.md,
+          },
+        ]}
+      >
         <FinanceToggle
           value={type}
           onChange={setType}
@@ -46,17 +65,7 @@ export default function ChartScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 4,
-    gap: 4,
-  },
   externalContainer: {
     flex: 1,
-  },
-  container: {
-    padding: 16,
-    gap: 16,
   },
 });

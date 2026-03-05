@@ -13,7 +13,6 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.externalContainer}>
       <View
         style={[
-          styles.header,
           {
             paddingHorizontal: spacing.md,
             paddingTop: spacing.sm,
@@ -71,9 +70,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   externalContainer: {
     flex: 1,
-  },
-  header: {
-    // spacing applicato inline tramite useTheme
   },
   container: {
     flex: 1,
