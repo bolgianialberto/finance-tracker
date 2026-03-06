@@ -1,5 +1,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 import { Pressable, StyleSheet, View } from "react-native";
 import { CategoryStats } from "../models/category-stats";
 import { Transaction } from "../models/transaction";
@@ -18,6 +20,7 @@ export function CategoryLegendItem({
   transactions,
   onPressCategory,
 }: Props) {
+  const styles = useStyles();
   const categoryTransactions = transactions.filter(
     (tx) => tx.categoryId === item.category.id,
   );
@@ -56,36 +59,42 @@ export function CategoryLegendItem({
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconWrapper: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  label: {},
-  subLabel: {
-    fontSize: 12,
-    opacity: 0.6,
-    marginTop: -5,
-  },
-  amount: {
-    fontWeight: "600",
-  },
-  vertical: {
-    flex: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#ccccccff",
-  },
-  item: {
-    paddingVertical: 8,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    iconWrapper: {
+      width: spacing.lxl,
+      height: spacing.lxl,
+      borderRadius: spacing.mm,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: spacing.m,
+    },
+    label: {},
+    subLabel: {
+      fontSize: spacing.m,
+      opacity: 0.6,
+      marginTop: -5,
+    },
+    amount: {
+      fontWeight: "600",
+    },
+    vertical: {
+      flex: 1,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.categoryLegendDivider,
+    },
+    item: {
+      paddingVertical: 8,
+    },
+  });

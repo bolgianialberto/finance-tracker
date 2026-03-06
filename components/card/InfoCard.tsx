@@ -19,7 +19,7 @@ export function InfoCard({
   vertical,
   variant = "default",
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const cardStyle = CARD_STYLES[variant];
 
   const backgroundColor = colors[cardStyle.background];
@@ -35,7 +35,11 @@ export function InfoCard({
         </ThemedText>
       </View>
 
-      <ThemedText style={styles.value} type="title" color={textColor}>
+      <ThemedText
+        style={[{ marginTop: spacing.m }]}
+        type="title"
+        color={textColor}
+      >
         ${value}
       </ThemedText>
 
@@ -56,8 +60,5 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 4,
     alignItems: "flex-start",
-  },
-  value: {
-    marginTop: 12,
   },
 });

@@ -1,5 +1,4 @@
 import { useTheme } from "@/hooks/use-theme";
-import { StyleSheet } from "react-native";
 import { ThemedView } from "../ui/themed-view";
 
 type Props = {
@@ -8,22 +7,21 @@ type Props = {
 };
 
 export function BaseCard({ backgroundColor, children }: Props) {
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const defaultBg = colors.baseCardBackground;
 
   return (
     <ThemedView
-      style={[styles.card, { backgroundColor: backgroundColor ?? defaultBg }]}
+      style={[
+        {
+          backgroundColor: backgroundColor ?? defaultBg,
+          borderRadius: spacing.m,
+          padding: spacing.ml,
+          elevation: spacing.xxs,
+        },
+      ]}
     >
       {children}
     </ThemedView>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    borderRadius: 12,
-    padding: 20,
-    elevation: 3,
-  },
-});

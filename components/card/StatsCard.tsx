@@ -21,7 +21,7 @@ export function StatsCard({
   variant = "default",
   vertical,
 }: Props) {
-  const { colors } = useTheme();
+  const { colors, spacing } = useTheme();
   const cardStyle = CARD_STYLES[variant];
 
   const backgroundColor = colors[cardStyle.background];
@@ -45,7 +45,11 @@ export function StatsCard({
         </ThemedText>
       </View>
 
-      <ThemedText style={styles.value} type="title" color={textColor}>
+      <ThemedText
+        style={[{ marginTop: spacing.m }]}
+        type="title"
+        color={textColor}
+      >
         ${value}
       </ThemedText>
     </BaseCard>
@@ -62,8 +66,5 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     gap: 4,
     alignItems: "flex-start",
-  },
-  value: {
-    marginTop: 12,
   },
 });

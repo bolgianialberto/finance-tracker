@@ -1,3 +1,4 @@
+import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { BaseCard } from "./BaseCard";
 
@@ -7,17 +8,19 @@ type Props = {
 };
 
 export function ChartCard({ header, children }: Props) {
+  const { spacing } = useTheme();
   return (
     <BaseCard>
-      {header && <View style={styles.header}>{header}</View>}
-      <View style={styles.content}>{children}</View>
+      {header && (
+        <View style={[styles.header, { marginBottom: spacing.m }]}>
+          {header}
+        </View>
+      )}
+      <View style={[{ gap: spacing.md }]}>{children}</View>
     </BaseCard>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { width: "100%", marginBottom: 12 },
-  content: {
-    gap: 16,
-  },
+  header: { width: "100%" },
 });

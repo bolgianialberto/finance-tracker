@@ -79,12 +79,16 @@ const typography = {
 // SPACING — usato per padding, margin, gap
 // ─────────────────────────────────────────────
 const spacing = {
-  xxs: 2,
+  xxxs: 2,
+  xxs: 3,
   xs: 4,
   sm: 8,
   m: 12,
+  mm: 14,
   md: 16,
+  ml: 20,
   lg: 24,
+  lxl: 28,
   xl: 32,
   xxl: 48,
 } as const;
@@ -176,7 +180,6 @@ const colors = {
   chartLoss: palette.red,
 
   // decorativi
-  divider: palette.black,
   barChartLabel: palette.black,
 
   // cards
@@ -192,8 +195,10 @@ const colors = {
   toggleBackground: palette.greyBg,
 
   // divider
-  settingDivider: palette.greyBgAlt,
   transDivider: palette.greyBgAlt,
+  settingDivider: palette.greyBgAlt,
+  darkDivider: palette.black,
+  categoryLegendDivider: palette.greyMid,
 } as const;
 
 // ─────────────────────────────────────────────
