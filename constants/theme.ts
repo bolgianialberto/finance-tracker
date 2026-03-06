@@ -15,6 +15,8 @@ const palette = {
 
   yellow: "#d8e619ff",
 
+  blue: "#3B82F6",
+
   black: "#11181C",
   white: "#ffffff",
   grey: "#687076",
@@ -82,6 +84,7 @@ const spacing = {
   xxxs: 2,
   xxs: 3,
   xs: 4,
+  s: 6,
   sm: 8,
   m: 12,
   mm: 14,
@@ -152,6 +155,7 @@ const colors = {
   textLight: palette.white,
   textMuted: palette.grey,
   textDisabled: palette.greyMid,
+  addText: palette.blue,
 
   // sfondi
   background: palette.white,
@@ -199,6 +203,9 @@ const colors = {
   settingDivider: palette.greyBgAlt,
   darkDivider: palette.black,
   categoryLegendDivider: palette.greyMid,
+
+  //button
+  pressedSettingsButton: palette.offWhite,
 } as const;
 
 // ─────────────────────────────────────────────

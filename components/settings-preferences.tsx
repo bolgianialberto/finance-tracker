@@ -1,11 +1,13 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 import { useState } from "react";
 import { Pressable, StyleSheet, Switch, View } from "react-native";
 
 export function SettingsPreferences() {
   const [notifications, setNotifications] = useState(true);
-
+  const styles = useStyles();
   return (
     <View>
       <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
@@ -41,6 +43,8 @@ function TappableRow({
   value: string;
   onPress?: () => void;
 }) {
+  const styles = useStyles();
+
   return (
     <Pressable
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
@@ -58,34 +62,40 @@ function TappableRow({
   );
 }
 
-const styles = StyleSheet.create({
-  sectionTitle: {
-    color: "#6B7280",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-  },
-  pressed: {
-    backgroundColor: "#F9FAFB",
-  },
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#E5E7EB",
-    marginLeft: 16,
-  },
-  value: {
-    opacity: 0.5,
-    fontSize: 14,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    sectionTitle: {
+      color: colors.text,
+      letterSpacing: 0.5,
+      marginBottom: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    card: {
+      backgroundColor: "#fff",
+      borderRadius: spacing.m,
+      overflow: "hidden",
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: spacing.mm,
+      paddingHorizontal: spacing.md,
+    },
+    pressed: {
+      backgroundColor: "#F9FAFB",
+    },
+    divider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.settingDivider,
+      marginLeft: spacing.md,
+    },
+    value: {
+      opacity: 0.5,
+      fontSize: spacing.mm,
+    },
+  });

@@ -3,6 +3,7 @@ import { FinanceDonutChart } from "@/components/finance-donut-chart";
 import { FinanceToggle } from "@/components/finance-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
 import { useFinanceData } from "@/hooks/use-finance-data";
 import { useTheme } from "@/hooks/use-theme";
 import { FinanceType } from "@/models/finance-type";
@@ -24,24 +25,15 @@ export default function TransactionsScreen() {
     );
   };
 
-  const { spacing, colors } = useTheme();
+  const styles = useStyles();
 
   return (
     <SafeAreaView style={styles.externalContainer} edges={["top"]}>
-      <View
-        style={[
-          {
-            paddingHorizontal: spacing.md,
-            paddingTop: spacing.sm,
-            paddingBottom: spacing.xs,
-            gap: spacing.xs,
-          },
-        ]}
-      >
+      <View style={styles.header}>
         <ThemedText type="subtitle">Transactions</ThemedText>
         <MonthLabel />
       </View>
-      <View style={[{ padding: spacing.md, gap: spacing.md }]}>
+      <View style={styles.content}>
         <FinanceToggle
           value={type}
           onChange={setType}
@@ -49,38 +41,15 @@ export default function TransactionsScreen() {
           getIncome={true}
           getExpenses={true}
         />
-        <View
-          style={[
-            styles.divider,
-            {
-              backgroundColor: colors.transDivider,
-            },
-          ]}
-        />
+        <View style={styles.divider} />
         <View style={styles.chartContainer}>
           <FinanceDonutChart data={data} total={total} />
         </View>
       </View>
-      <View
-        style={[
-          styles.divider,
-          {
-            backgroundColor: colors.transDivider,
-          },
-        ]}
-      />
-      <View
-        style={[
-          styles.legendContainer,
-          {
-            backgroundColor: colors.transLegendBackground,
-          },
-        ]}
-      >
+      <View style={styles.divider} />
+      <View style={styles.legendContainer}>
         <ScrollView
-          contentContainerStyle={[
-            { paddingHorizontal: spacing.md, paddingBottom: spacing.m },
-          ]}
+          contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}
         >
           <CategoryLegend
@@ -95,18 +64,40 @@ export default function TransactionsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  externalContainer: {
-    flex: 1,
-  },
-  divider: {
-    height: 1,
-  },
-  legendContainer: {
-    flex: 1,
-  },
-  chartContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    header: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.xs,
+      gap: spacing.xs,
+    },
+    externalContainer: {
+      flex: 1,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: colors.transDivider,
+    },
+    legendContainer: {
+      flex: 1,
+      backgroundColor: colors.transLegendBackground,
+    },
+    chartContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    container: {
+      paddingHorizontal: spacing.md,
+      paddingBottom: spacing.m,
+    },
+    content: {
+      padding: spacing.md,
+      gap: spacing.md,
+    },
+  });

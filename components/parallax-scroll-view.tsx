@@ -8,6 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { ThemedView } from "@/components/ui/themed-view";
+import { Colors, Spacing } from "@/constants/theme";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -24,6 +25,7 @@ export default function ParallaxScrollView({
   headerBackgroundColor,
 }: Props) {
   const { colors } = useTheme();
+  const styles = useStyles();
   const backgroundColor = colors.background;
   const colorScheme = useColorScheme() ?? "light";
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -69,18 +71,24 @@ export default function ParallaxScrollView({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    height: HEADER_HEIGHT,
-    overflow: "hidden",
-  },
-  content: {
-    flex: 1,
-    padding: 32,
-    gap: 16,
-    overflow: "hidden",
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    header: {
+      height: HEADER_HEIGHT,
+      overflow: "hidden",
+    },
+    content: {
+      flex: 1,
+      padding: spacing.xl,
+      gap: spacing.md,
+      overflow: "hidden",
+    },
+  });

@@ -1,4 +1,5 @@
 import { ToggleButton } from "@/components/finance-toggle-button";
+import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { FinanceType } from "../models/finance-type";
@@ -18,11 +19,10 @@ export function FinanceToggle({
   getIncome,
   getExpenses,
 }: Props) {
-  const { colors } = useTheme();
-  const bg = colors.toggleBackground;
+  const styles = useStyles();
 
   return (
-    <View style={[styles.container, { backgroundColor: bg }]}>
+    <View style={styles.container}>
       {getGeneral && (
         <ToggleButton
           label="General"
@@ -48,10 +48,17 @@ export function FinanceToggle({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    borderRadius: 12,
-    padding: 4,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: "row",
+      borderRadius: spacing.m,
+      padding: spacing.xs,
+      backgroundColor: colors.toggleBackground,
+    },
+  });

@@ -1,5 +1,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 import { Account } from "@/models/account";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 
@@ -10,6 +12,8 @@ type Props = {
 };
 
 export function SettingsAccounts({ accounts, loading, onAddAccount }: Props) {
+  const styles = useStyles();
+
   if (loading) {
     return <ActivityIndicator style={{ marginTop: 16 }} />;
   }
@@ -63,51 +67,57 @@ export function SettingsAccounts({ accounts, loading, onAddAccount }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  sectionTitle: {
-    color: "#6B7280",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  pressed: {
-    backgroundColor: "#F9FAFB",
-  },
-  iconWrapper: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  addIconWrapper: {
-    backgroundColor: "#EFF6FF",
-  },
-  vertical: {
-    flex: 1,
-  },
-  amount: {
-    fontWeight: "600",
-  },
-  addLabel: {
-    color: "#3B82F6",
-    flex: 1,
-  },
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#E5E7EB",
-    marginLeft: 56,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    sectionTitle: {
+      color: colors.text,
+      letterSpacing: 0.5,
+      marginBottom: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    card: {
+      backgroundColor: "#fff",
+      borderRadius: spacing.m,
+      overflow: "hidden",
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: spacing.m,
+      paddingHorizontal: spacing.md,
+    },
+    pressed: {
+      backgroundColor: colors.pressedSettingsButton,
+    },
+    iconWrapper: {
+      width: spacing.lxl,
+      height: spacing.lxl,
+      borderRadius: spacing.md,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: spacing.m,
+    },
+    addIconWrapper: {
+      backgroundColor: "#EFF6FF",
+    },
+    vertical: {
+      flex: 1,
+    },
+    amount: {
+      fontWeight: "600",
+    },
+    addLabel: {
+      color: colors.addText,
+      flex: 1,
+    },
+    divider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.settingDivider,
+      marginLeft: 56,
+    },
+  });

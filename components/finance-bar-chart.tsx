@@ -1,3 +1,4 @@
+import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
@@ -26,11 +27,12 @@ export function FinanceBarChart({
   canLoadMore = { left: false, right: false },
 }: Props) {
   const { colors } = useTheme();
+  const styles = useStyles();
   const incomeColor = colors.income;
   const expenseColor = colors.expense;
   const gainColor = colors.gain;
   const lossColor = colors.loss;
-  const axisColor = colors.divider;
+  const axisColor = colors.darkDivider;
   const barChartTextLabel = colors.text;
 
   const [periodLabel, setPeriodLabel] = useState("");
@@ -286,10 +288,10 @@ export function FinanceBarChart({
 
       {/* LEGENDA */}
       <View style={styles.legend}>
-        <LegendItem color={incomeColor} label="Income" />
-        <LegendItem color={expenseColor} label="Expenses" />
-        <LegendItem color={gainColor} label="Gain" />
-        <LegendItem color={lossColor} label="Loss" />
+        <LegendItem color={incomeColor} label="Income" styles={styles} />
+        <LegendItem color={expenseColor} label="Expenses" styles={styles} />
+        <LegendItem color={gainColor} label="Gain" styles={styles} />
+        <LegendItem color={lossColor} label="Loss" styles={styles} />
       </View>
     </View>
   );
@@ -366,7 +368,17 @@ function AnimatedBar({
   );
 }
 
-function LegendItem({ color, label }: { color: string; label: string }) {
+type Styles = ReturnType<typeof createStyles>;
+
+function LegendItem({
+  color,
+  label,
+  styles,
+}: {
+  color: string;
+  label: string;
+  styles: Styles;
+}) {
   return (
     <View style={styles.legendItem}>
       <View style={[styles.legendDot, { backgroundColor: color }]} />
@@ -392,46 +404,52 @@ function formatPeriodLabel(date: Date, range: TimeRange) {
   }
 }
 
-const styles = StyleSheet.create({
-  legend: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 6,
-    gap: 14,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 12,
-  },
-  periodLabelContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  periodLabel: {
-    textAlign: "center",
-    fontSize: 12,
-    opacity: 0.6,
-  },
-  tooltip: {
-    position: "absolute",
-    backgroundColor: "#E5E7EB",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    zIndex: 10,
-  },
-  tooltipText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    legend: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginTop: spacing.s,
+      gap: spacing.mm,
+    },
+    legendItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: spacing.s,
+    },
+    legendDot: {
+      width: spacing.m,
+      height: spacing.m,
+      borderRadius: spacing.sm,
+    },
+    legendText: {
+      fontSize: spacing.m,
+    },
+    periodLabelContainer: {
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: spacing.m,
+    },
+    periodLabel: {
+      textAlign: "center",
+      fontSize: spacing.m,
+      opacity: 0.6,
+    },
+    tooltip: {
+      position: "absolute",
+      backgroundColor: "#E5E7EB",
+      paddingHorizontal: spacing.m,
+      paddingVertical: spacing.xs,
+      borderRadius: spacing.sm,
+      zIndex: spacing.m,
+    },
+    tooltipText: {
+      fontSize: spacing.m,
+      fontWeight: "600",
+    },
+  });

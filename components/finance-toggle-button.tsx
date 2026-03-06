@@ -1,3 +1,4 @@
+import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { Pressable, StyleSheet } from "react-native";
 import { FINANCE_TOGGLE_STYLES, ToggleVariant } from "../variant/toggle.styles";
@@ -11,7 +12,7 @@ type Props = {
 
 export function ToggleButton({ label, variant, onPress }: Props) {
   const styleTokens = FINANCE_TOGGLE_STYLES[variant];
-
+  const styles = useStyles();
   const { colors } = useTheme();
   const backgroundColor = colors[styleTokens.background];
   const textColor = colors[styleTokens.text];
@@ -26,11 +27,17 @@ export function ToggleButton({ label, variant, onPress }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  button: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: "center",
-    borderRadius: 8,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    button: {
+      flex: 1,
+      paddingVertical: spacing.m,
+      alignItems: "center",
+      borderRadius: spacing.sm,
+    },
+  });

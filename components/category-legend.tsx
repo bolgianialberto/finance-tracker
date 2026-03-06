@@ -1,3 +1,5 @@
+import { Colors, Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { CategoryStats } from "../models/category-stats";
 import { Transaction } from "../models/transaction";
@@ -16,6 +18,8 @@ export function CategoryLegend({
   transactions,
   onPressCategory,
 }: Props) {
+  const styles = useStyles();
+
   return (
     <View>
       {data.map((item, index) => {
@@ -40,36 +44,42 @@ export function CategoryLegend({
   );
 }
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconWrapper: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 12,
-  },
-  label: {},
-  subLabel: {
-    fontSize: 12,
-    opacity: 0.6,
-    marginTop: -5,
-  },
-  amount: {
-    fontWeight: "600",
-  },
-  vertical: {
-    flex: 1,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#ccccccff",
-  },
-  item: {
-    paddingVertical: 8, // 🔥 spazio sopra E sotto
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    iconWrapper: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      alignItems: "center",
+      justifyContent: "center",
+      marginRight: 12,
+    },
+    label: {},
+    subLabel: {
+      fontSize: 12,
+      opacity: 0.6,
+      marginTop: -5,
+    },
+    amount: {
+      fontWeight: "600",
+    },
+    vertical: {
+      flex: 1,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: "#ccccccff",
+    },
+    item: {
+      paddingVertical: 8, // 🔥 spazio sopra E sotto
+    },
+  });

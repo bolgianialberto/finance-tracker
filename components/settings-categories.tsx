@@ -1,5 +1,7 @@
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
 import { Category } from "@/models/category";
 import { Pressable, StyleSheet, View } from "react-native";
 
@@ -14,6 +16,7 @@ export function SettingsCategories({
   loading,
   onAddCategory,
 }: Props) {
+  const styles = useStyles();
   return (
     <View>
       <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
@@ -52,47 +55,53 @@ export function SettingsCategories({
   );
 }
 
-const styles = StyleSheet.create({
-  sectionTitle: {
-    color: "#6B7280",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-    marginLeft: 4,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 12,
-  },
-  grid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-  },
-  item: {
-    width: "25%",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  pressed: {
-    backgroundColor: "#F9FAFB",
-  },
-  iconWrapper: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 6,
-  },
-  addIconWrapper: {
-    backgroundColor: "#EFF6FF",
-  },
-  label: {
-    fontSize: 12,
-    textAlign: "center",
-  },
-  addLabel: {
-    color: "#3B82F6",
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    sectionTitle: {
+      color: colors.text,
+      letterSpacing: 0.5,
+      marginBottom: spacing.sm,
+      marginLeft: spacing.xs,
+    },
+    card: {
+      backgroundColor: "#fff",
+      borderRadius: spacing.m,
+      padding: spacing.m,
+    },
+    grid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+    },
+    item: {
+      width: "25%",
+      alignItems: "center",
+      paddingVertical: spacing.m,
+      borderRadius: spacing.sm,
+    },
+    pressed: {
+      backgroundColor: colors.pressedSettingsButton,
+    },
+    iconWrapper: {
+      width: 52,
+      height: 52,
+      borderRadius: spacing.lg,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: spacing.s,
+    },
+    addIconWrapper: {
+      backgroundColor: "#EFF6FF",
+    },
+    label: {
+      fontSize: 12,
+      textAlign: "center",
+    },
+    addLabel: {
+      color: colors.addText,
+    },
+  });

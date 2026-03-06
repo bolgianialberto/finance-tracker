@@ -1,3 +1,4 @@
+import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import type { IconSymbolName } from "./icon-symbol";
@@ -16,7 +17,7 @@ export function IconSymbolWrapped({
   backgroundColor,
   iconColor,
 }: Props) {
-  const { spacing } = useTheme();
+  const styles = useStyles();
 
   return (
     <View
@@ -24,10 +25,6 @@ export function IconSymbolWrapped({
         styles.container,
         {
           backgroundColor: backgroundColor,
-          padding: spacing.sm,
-          borderRadius: spacing.m,
-          elevation: spacing.xxs,
-          shadowRadius: spacing.xs,
         },
       ]}
     >
@@ -36,14 +33,25 @@ export function IconSymbolWrapped({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
 
-    // iOS
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-  },
-});
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    container: {
+      alignItems: "center",
+      justifyContent: "center",
+
+      padding: spacing.sm,
+      borderRadius: spacing.m,
+      elevation: spacing.xxs,
+      shadowRadius: spacing.xs,
+
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+    },
+  });

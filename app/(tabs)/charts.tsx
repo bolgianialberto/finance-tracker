@@ -4,6 +4,7 @@ import { FinanceToggle } from "@/components/finance-toggle";
 import { TimeRangeToggle } from "@/components/time-range-toggle";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
+import { Colors, Spacing } from "@/constants/theme";
 import { useBarChartData } from "@/hooks/use-bar-chart-data";
 import { useTheme } from "@/hooks/use-theme";
 import { ChartType } from "@/models/chart-type";
@@ -17,31 +18,15 @@ export default function ChartScreen() {
   const [range, setRange] = useState<TimeRange>("month");
   const { data, loadMore, canLoadMore } = useBarChartData(type, range);
 
-  const { spacing } = useTheme();
+  const styles = useStyles();
 
   return (
     <SafeAreaView style={styles.externalContainer}>
-      <View
-        style={[
-          {
-            paddingHorizontal: spacing.md,
-            paddingTop: spacing.sm,
-            paddingBottom: spacing.xs,
-            gap: spacing.xs,
-          },
-        ]}
-      >
+      <View style={styles.header}>
         <ThemedText type="subtitle">Charts</ThemedText>
         <MonthLabel />
       </View>
-      <View
-        style={[
-          {
-            padding: spacing.md,
-            gap: spacing.md,
-          },
-        ]}
-      >
+      <View style={styles.container}>
         <FinanceToggle
           value={type}
           onChange={setType}
@@ -64,8 +49,24 @@ export default function ChartScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  externalContainer: {
-    flex: 1,
-  },
-});
+const useStyles = () => {
+  const { colors, spacing } = useTheme();
+  return createStyles(colors, spacing);
+};
+
+const createStyles = (colors: Colors, spacing: Spacing) =>
+  StyleSheet.create({
+    externalContainer: {
+      flex: 1,
+    },
+    header: {
+      paddingHorizontal: spacing.md,
+      paddingTop: spacing.sm,
+      paddingBottom: spacing.xs,
+      gap: spacing.xs,
+    },
+    container: {
+      padding: spacing.md,
+      gap: spacing.md,
+    },
+  });
