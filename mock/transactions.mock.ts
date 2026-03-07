@@ -17,7 +17,7 @@ export const mockTransactions: Transaction[] = [
     amount: 850,
     note: "January rent",
     accountName: "Bank",
-    type: "expenses",
+    type: "expense",
     date: "2023-01-02",
   },
   {
@@ -26,7 +26,7 @@ export const mockTransactions: Transaction[] = [
     amount: 95,
     note: "Groceries",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2023-01-08",
   },
   {
@@ -35,7 +35,7 @@ export const mockTransactions: Transaction[] = [
     amount: 120,
     note: "Electricity bill",
     accountName: "Bank",
-    type: "expenses",
+    type: "expense",
     date: "2023-02-10",
   },
   {
@@ -64,7 +64,7 @@ export const mockTransactions: Transaction[] = [
     amount: 900,
     note: "March rent",
     accountName: "Bank",
-    type: "expenses",
+    type: "expense",
     date: "2024-03-01",
   },
   {
@@ -73,7 +73,7 @@ export const mockTransactions: Transaction[] = [
     amount: 60,
     note: "Lunch",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2024-03-06",
   },
   {
@@ -82,7 +82,7 @@ export const mockTransactions: Transaction[] = [
     amount: 45,
     note: "Cinema",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2024-03-09",
   },
   {
@@ -91,7 +91,7 @@ export const mockTransactions: Transaction[] = [
     amount: 300,
     note: "Weekend trip",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2024-06-18",
   },
 
@@ -120,7 +120,7 @@ export const mockTransactions: Transaction[] = [
     amount: 30,
     note: "Coffee & snacks",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2025-01-21",
   },
   {
@@ -129,7 +129,7 @@ export const mockTransactions: Transaction[] = [
     amount: 110,
     note: "Weekly groceries",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2025-01-25",
   },
   {
@@ -138,7 +138,7 @@ export const mockTransactions: Transaction[] = [
     amount: 250,
     note: "Clothes",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2025-04-02",
   },
 
@@ -158,7 +158,7 @@ export const mockTransactions: Transaction[] = [
     amount: 950,
     note: "July rent",
     accountName: "Bank",
-    type: "expenses",
+    type: "expense",
     date: "2026-07-01",
   },
   {
@@ -167,7 +167,7 @@ export const mockTransactions: Transaction[] = [
     amount: 25,
     note: "Breakfast",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2026-07-02",
   },
   {
@@ -176,7 +176,7 @@ export const mockTransactions: Transaction[] = [
     amount: 70,
     note: "Dinner",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2026-07-03",
   },
   {
@@ -185,7 +185,7 @@ export const mockTransactions: Transaction[] = [
     amount: 55,
     note: "Concert",
     accountName: "Card",
-    type: "expenses",
+    type: "expense",
     date: "2026-07-05",
   },
   {

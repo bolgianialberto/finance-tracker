@@ -10,10 +10,14 @@ type Props = {
 
 export function TransactionList({ transactions }: Props) {
   const styles = useStyles();
+
   return (
     <View style={styles.container}>
-      {transactions.map((tx) => (
-        <TransactionListItem key={tx.id} transaction={tx} />
+      {transactions.map((tx, index) => (
+        <View key={tx.id}>
+          <TransactionListItem transaction={tx} />
+          {index < transactions.length - 1 && <View style={styles.divider} />}
+        </View>
       ))}
     </View>
   );
@@ -27,21 +31,15 @@ const useStyles = () => {
 const createStyles = (colors: Colors, spacing: Spacing) =>
   StyleSheet.create({
     container: {
-      paddingLeft: 40,
+      marginTop: spacing.xs,
+      borderLeftWidth: 1.5,
+      borderLeftColor: colors.categoryLegendDivider,
+      paddingLeft: spacing.m,
+      marginHorizontal: spacing.m,
     },
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    center: {
-      flex: 1,
-    },
-    subLabel: {
-      fontSize: spacing.m,
-      opacity: 0.6,
-      marginTop: -spacing.s,
-    },
-    amount: {
-      fontWeight: "500",
+    divider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.categoryLegendDivider,
+      marginVertical: 2,
     },
   });

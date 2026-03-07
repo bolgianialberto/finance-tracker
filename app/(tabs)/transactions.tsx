@@ -12,7 +12,7 @@ import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
-  const [type, setType] = useState<FinanceType>("expenses");
+  const [type, setType] = useState<FinanceType>("expense");
   const { data, total, transactions } = useFinanceData(type);
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>([]);
 

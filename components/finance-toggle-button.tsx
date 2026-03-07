@@ -14,19 +14,16 @@ export function ToggleButton({ label, variant, onPress }: Props) {
   const styleTokens = FINANCE_TOGGLE_STYLES[variant];
   const styles = useStyles();
   const { colors } = useTheme();
-  const backgroundColor = colors[styleTokens.background];
   const textColor = colors[styleTokens.text];
 
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.button,
-        variant === "selected" && styles.selected,
-        { backgroundColor: backgroundColor },
-      ]}
+      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
     >
-      <ThemedText style={{ color: textColor }}>{label}</ThemedText>
+      <ThemedText style={[styles.label, { color: textColor }]}>
+        {label}
+      </ThemedText>
     </Pressable>
   );
 }
@@ -43,12 +40,13 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
       paddingVertical: spacing.m,
       alignItems: "center",
       borderRadius: spacing.sm,
+      // Niente backgroundColor: la pill sotto ci pensa
+      zIndex: 1, // bottone sopra la pill per ricevere i touch
     },
-    selected: {
-      elevation: spacing.xs, // Android
-      shadowColor: "#000", // iOS
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.15,
-      shadowRadius: spacing.xxs,
+    pressed: {
+      opacity: 0.7,
+    },
+    label: {
+      fontWeight: "500",
     },
   });
