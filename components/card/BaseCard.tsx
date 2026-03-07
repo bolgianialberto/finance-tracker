@@ -18,6 +18,10 @@ export function BaseCard({ backgroundColor, children }: Props) {
           borderRadius: spacing.m,
           padding: spacing.ml,
           elevation: spacing.xxs,
+          shadowRadius: spacing.xs,
+          shadowColor: "#000",
+          shadowOffset: { width: 2, height: 2 },
+          shadowOpacity: 0.15,
         },
       ]}
     >

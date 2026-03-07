@@ -10,6 +10,7 @@ import { TransactionList } from "./transactions-list";
 type Props = {
   item: CategoryStats;
   isExpanded: boolean;
+  // FIX: le transactions arrivano già filtrate dal parent, non serve rifiltrarle
   transactions: Transaction[];
   onPressCategory?: (categoryId: string) => void;
 };
@@ -21,40 +22,42 @@ export function CategoryLegendItem({
   onPressCategory,
 }: Props) {
   const styles = useStyles();
-  const categoryTransactions = transactions.filter(
-    (tx) => tx.categoryId === item.category.id,
-  );
-  return (
-    <View key={item.category.id}>
-      <View style={styles.item}>
-        <Pressable
-          onPress={() => onPressCategory?.(item.category.id)}
-          style={styles.row}
-        >
-          <View
-            style={[
-              styles.iconWrapper,
-              { backgroundColor: item.category.color },
-            ]}
-          >
-            <IconSymbol name={item.category.icon} size={16} color="#fff" />
-          </View>
 
-          <View style={styles.vertical}>
-            <ThemedText style={styles.label}>{item.category.name}</ThemedText>
-            <ThemedText style={styles.subLabel}>
-              {item.transactionCount} transactions
-            </ThemedText>
-          </View>
-          <ThemedText style={styles.amount}>€ {item.amount}</ThemedText>
-          <IconSymbol
-            name={isExpanded ? "chevron.up" : "chevron.down"}
-            size={24}
-            color="#11181C"
-          />
-        </Pressable>
-        {isExpanded && <TransactionList transactions={categoryTransactions} />}
-      </View>
+  return (
+    <View style={styles.item}>
+      <Pressable
+        onPress={() => onPressCategory?.(item.category.id)}
+        style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+        android_ripple={{ color: "rgba(0,0,0,0.05)", borderless: false }}
+      >
+        <View
+          style={[styles.iconWrapper, { backgroundColor: item.category.color }]}
+        >
+          <IconSymbol name={item.category.icon} size={16} color="#fff" />
+        </View>
+
+        <View style={styles.vertical}>
+          <ThemedText style={styles.label}>{item.category.name}</ThemedText>
+          <ThemedText style={styles.subLabel}>
+            {item.transactionCount}{" "}
+            {item.transactionCount === 1 ? "transazione" : "transazioni"}
+          </ThemedText>
+        </View>
+
+        <ThemedText style={styles.amount}>
+          € {item.amount.toFixed(2)}
+        </ThemedText>
+
+        <IconSymbol
+          name={isExpanded ? "chevron.up" : "chevron.down"}
+          size={20}
+          color="#11181C"
+          style={styles.chevron}
+        />
+      </Pressable>
+
+      {/* FIX: le transactions sono già filtrate, niente doppio .filter() */}
+      {isExpanded && <TransactionList transactions={transactions} />}
     </View>
   );
 }
@@ -66,35 +69,52 @@ const useStyles = () => {
 
 const createStyles = (colors: Colors, spacing: Spacing) =>
   StyleSheet.create({
+    item: {
+      paddingVertical: 10,
+      borderRadius: 12,
+      overflow: "hidden",
+    },
     row: {
       flexDirection: "row",
       alignItems: "center",
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 10,
+    },
+    rowPressed: {
+      opacity: 0.7,
     },
     iconWrapper: {
-      width: spacing.lxl,
-      height: spacing.lxl,
-      borderRadius: spacing.mm,
       alignItems: "center",
       justifyContent: "center",
-      marginRight: spacing.m,
+
+      padding: spacing.sm,
+      borderRadius: spacing.m,
+      elevation: spacing.xxs,
+      shadowRadius: spacing.xs,
+
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      marginRight: 8,
     },
-    label: {},
+    label: {
+      fontWeight: "600",
+    },
     subLabel: {
       fontSize: spacing.m,
-      opacity: 0.6,
-      marginTop: -5,
+      opacity: 0.5,
+      marginTop: 1,
     },
     amount: {
-      fontWeight: "600",
+      fontWeight: "700",
+      marginRight: spacing.m,
     },
     vertical: {
       flex: 1,
     },
-    divider: {
-      height: 1,
-      backgroundColor: colors.categoryLegendDivider,
-    },
-    item: {
-      paddingVertical: 8,
+    chevron: {
+      opacity: 0.4,
     },
   });

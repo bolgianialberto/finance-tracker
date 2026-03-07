@@ -20,7 +20,11 @@ export function ToggleButton({ label, variant, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.button, { backgroundColor: backgroundColor }]}
+      style={[
+        styles.button,
+        variant === "selected" && styles.selected,
+        { backgroundColor: backgroundColor },
+      ]}
     >
       <ThemedText style={{ color: textColor }}>{label}</ThemedText>
     </Pressable>
@@ -39,5 +43,12 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
       paddingVertical: spacing.m,
       alignItems: "center",
       borderRadius: spacing.sm,
+    },
+    selected: {
+      elevation: spacing.xs, // Android
+      shadowColor: "#000", // iOS
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: spacing.xxs,
     },
   });

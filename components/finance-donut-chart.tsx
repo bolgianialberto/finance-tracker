@@ -19,6 +19,9 @@ export function FinanceDonutChart({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
+  const gap = 6;
+  const adjustedCircumference = circumference - gap * data.length;
+
   let currentOffset = 0;
 
   return (
@@ -26,13 +29,12 @@ export function FinanceDonutChart({
       <Svg width={size} height={size}>
         {data.map((item, index) => {
           const percentage = item.amount / total;
-          const strokeLength = circumference * percentage;
-          const gap = 7;
+          const strokeLength = adjustedCircumference * percentage;
 
-          const dashArray = `${strokeLength - gap} ${circumference}`;
+          const dashArray = `${strokeLength} ${circumference}`;
           const dashOffset = -currentOffset;
 
-          currentOffset += strokeLength;
+          currentOffset += strokeLength + gap;
 
           return (
             <Circle
@@ -44,7 +46,7 @@ export function FinanceDonutChart({
               strokeWidth={strokeWidth}
               strokeDasharray={dashArray}
               strokeDashoffset={dashOffset}
-              strokeLinecap="round"
+              strokeLinecap="butt"
               fill="none"
               rotation="-90"
               origin={`${size / 2}, ${size / 2}`}

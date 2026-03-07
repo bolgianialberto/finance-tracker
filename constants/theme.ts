@@ -161,7 +161,7 @@ const colors = {
   background: palette.white,
   backgroundCard: palette.white,
   backgroundMuted: palette.offWhite,
-  transLegendBackground: palette.greyBgAlt,
+  transLegendBackground: palette.offWhite,
 
   // icone e tab bar
   icon: palette.grey,
@@ -169,13 +169,14 @@ const colors = {
   tabIconSelected: palette.purple,
 
   // toggle
-  toggleBg: palette.greyBg,
+  toggleBg: palette.greyBgAlt,
   toggleSelectedBg: palette.offWhite,
-  toggleUnselectedBg: palette.greyBg,
+  toggleUnselectedBg: palette.greyBgAlt,
   toggleSelectedText: palette.black,
-  toggleUnselectedText: palette.black,
+  toggleUnselectedText: palette.grey,
   toggleTimeSelectedText: palette.black,
   toggleTimeUnselectedText: palette.greyMid,
+  toggleBackground: palette.greyBgAlt,
 
   // grafici / finanza
   chartIncome: palette.green,
@@ -194,9 +195,6 @@ const colors = {
   expense: palette.yellow,
   gain: palette.purple,
   loss: palette.red,
-
-  // toggle
-  toggleBackground: palette.greyBg,
 
   // divider
   transDivider: palette.greyBgAlt,

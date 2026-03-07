@@ -46,12 +46,5 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
 
       padding: spacing.sm,
       borderRadius: spacing.m,
-      elevation: spacing.xxs,
-      shadowRadius: spacing.xs,
-
-      // iOS
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.15,
     },
   });

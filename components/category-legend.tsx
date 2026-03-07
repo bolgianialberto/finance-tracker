@@ -1,4 +1,3 @@
-import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { CategoryStats } from "../models/category-stats";
@@ -21,9 +20,10 @@ export function CategoryLegend({
   const styles = useStyles();
 
   return (
-    <View>
+    <View style={styles.content}>
       {data.map((item, index) => {
         const isExpanded = expandedCategoryIds.includes(item.category.id);
+        // FIX: filtro centralizzato qui, non ripetuto nel child
         const categoryTransactions = transactions.filter(
           (tx) => tx.categoryId === item.category.id,
         );
@@ -35,7 +35,6 @@ export function CategoryLegend({
               transactions={categoryTransactions}
               onPressCategory={onPressCategory}
             />
-            {/* DIVIDER (non sull'ultimo) */}
             {index < data.length - 1 && <View style={styles.divider} />}
           </View>
         );
@@ -45,41 +44,15 @@ export function CategoryLegend({
 }
 
 const useStyles = () => {
-  const { colors, spacing } = useTheme();
-  return createStyles(colors, spacing);
-};
-
-const createStyles = (colors: Colors, spacing: Spacing) =>
-  StyleSheet.create({
-    row: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    iconWrapper: {
-      width: 28,
-      height: 28,
-      borderRadius: 14,
-      alignItems: "center",
-      justifyContent: "center",
-      marginRight: 12,
-    },
-    label: {},
-    subLabel: {
-      fontSize: 12,
-      opacity: 0.6,
-      marginTop: -5,
-    },
-    amount: {
-      fontWeight: "600",
-    },
-    vertical: {
-      flex: 1,
+  const { colors } = useTheme();
+  return StyleSheet.create({
+    content: {
+      paddingVertical: 4,
     },
     divider: {
-      height: 1,
-      backgroundColor: "#ccccccff",
-    },
-    item: {
-      paddingVertical: 8, // 🔥 spazio sopra E sotto
+      height: StyleSheet.hairlineWidth, // più moderno e pixel-perfect
+      backgroundColor: colors.categoryLegendDivider, // FIX: era hardcoded "#ccccccff"
+      marginHorizontal: 8,
     },
   });
+};
