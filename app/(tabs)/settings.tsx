@@ -7,13 +7,34 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useSettingsData } from "@/hooks/use-account-data";
 import { useCategoriesData } from "@/hooks/use-category-data";
 import { useTheme } from "@/hooks/use-theme";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { supabase } from "@/src/lib/supabase";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
   const { accounts, loadingAccounts } = useSettingsData();
   const { categories, loadingCategories } = useCategoriesData();
   const styles = useStyles();
+
+  async function handleSignOut() {
+    Alert.alert("Esci", "Sei sicuro di voler uscire?", [
+      { text: "Annulla", style: "cancel" },
+      {
+        text: "Esci",
+        style: "destructive",
+        onPress: async () => {
+          await supabase.auth.signOut();
+          // Il _layout.tsx rileva la sessione nulla e reindirizza al login
+        },
+      },
+    ]);
+  }
 
   return (
     <SafeAreaView style={styles.externalContainer} edges={["top"]}>
@@ -41,6 +62,16 @@ export default function SettingsScreen() {
           <View style={styles.sectionDivider} />
 
           <SettingsPreferences />
+
+          <View style={styles.sectionDivider} />
+
+          <TouchableOpacity
+            style={styles.signOutBtn}
+            onPress={handleSignOut}
+            activeOpacity={0.7}
+          >
+            <ThemedText style={styles.signOutText}>Sign out</ThemedText>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -65,7 +96,6 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
       paddingVertical: spacing.m,
       gap: spacing.md,
     },
-
     externalContainer: {
       flex: 1,
     },
@@ -79,5 +109,14 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
     sectionDivider: {
       height: 1,
       backgroundColor: colors.settingDivider,
+    },
+    signOutBtn: {
+      paddingVertical: spacing.sm,
+      alignItems: "center",
+    },
+    signOutText: {
+      color: "#ef4444",
+      fontWeight: "600",
+      fontSize: 16,
     },
   });
