@@ -1,47 +1,51 @@
+import { CategoryAmount } from "@/models/category-amount";
+import { CategoryStats } from "@/models/category-stats";
+import { FinanceType } from "@/models/finance-type";
+import { Transaction } from "@/models/transaction";
+import { fetchTransactionsData } from "@/src/queries/transactions.queries";
 import { useEffect, useState } from "react";
-import { getFinanceMock } from "../mock/finance.mock";
-import { mockTransactions } from "../mock/transactions.mock";
-import { CategoryStats } from "../models/category-stats";
-import type { FinanceType } from "../models/finance-type";
-import { Transaction } from "../models/transaction";
 
-export function useFinanceData(type: FinanceType) {
+interface UseFinanceDataReturn {
+  data: CategoryStats[]; // per CategoryLegend
+  amounts: CategoryAmount[]; // per FinanceDonutChart
+  transactions: Transaction[]; // per la lista dentro ogni categoria
+  total: number; // per il centro del donut
+  loading: boolean;
+  error: string | null;
+  refetch: () => void;
+}
+
+export function useFinanceData(type: FinanceType): UseFinanceDataReturn {
   const [data, setData] = useState<CategoryStats[]>([]);
+  const [amounts, setAmounts] = useState<CategoryAmount[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  async function load() {
+    // "general" non è supportato in questa schermata
+    if (type === "general") return;
+
     setLoading(true);
-
-    if (type === "general") {
-      // 🔥 tutte le transazioni
-      setTransactions(mockTransactions);
-      setData([]);
+    setError(null);
+    try {
+      const result = await fetchTransactionsData(type);
+      setData(result.categoryStats);
+      setAmounts(result.categoryAmounts);
+      setTransactions(result.transactions);
+      setTotal(result.total);
+    } catch (e: any) {
+      setError(e.message ?? "Errore sconosciuto");
+    } finally {
       setLoading(false);
-      return;
     }
+  }
 
-    // 🔁 oggi mock
-    const categories = getFinanceMock(type);
-    setData(categories);
-
-    const tsx = mockTransactions.filter((tx) =>
-      categories.some((c) => c.category.id === tx.categoryId),
-    );
-    setTransactions(tsx);
-
-    setLoading(false);
-
-    // 🚀 domani:
-    // fetch(`/api/finance?type=${type}`)
+  // Si ricarica ogni volta che cambia il tipo (income ↔ expense)
+  useEffect(() => {
+    load();
   }, [type]);
 
-  const total = data.reduce((sum, item) => sum + item.amount, 0);
-
-  return {
-    data,
-    transactions,
-    total,
-    loading,
-  };
+  return { data, amounts, transactions, total, loading, error, refetch: load };
 }

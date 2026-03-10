@@ -13,15 +13,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
   const [type, setType] = useState<FinanceType>("expense");
-  const { data, total, transactions } = useFinanceData(type);
+  const { data, amounts, total, transactions } = useFinanceData(type);
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>([]);
 
   const toggleCategory = (categoryId: string) => {
-    setExpandedCategoryIds(
-      (prev) =>
-        prev.includes(categoryId)
-          ? prev.filter((id) => id !== categoryId) // chiudi
-          : [...prev, categoryId], // apri
+    setExpandedCategoryIds((prev) =>
+      prev.includes(categoryId)
+        ? prev.filter((id) => id !== categoryId)
+        : [...prev, categoryId],
     );
   };
 
@@ -43,7 +42,8 @@ export default function TransactionsScreen() {
         />
         <View style={styles.divider} />
         <View style={styles.chartContainer}>
-          <FinanceDonutChart data={data} total={total} />
+          {/* amounts va al donut (CategoryAmount[]) */}
+          <FinanceDonutChart data={amounts} total={total} />
         </View>
       </View>
       <View style={styles.divider} />
@@ -52,6 +52,7 @@ export default function TransactionsScreen() {
           contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}
         >
+          {/* data va alla legend (CategoryStats[]) */}
           <CategoryLegend
             data={data}
             expandedCategoryIds={expandedCategoryIds}

@@ -16,7 +16,6 @@ export type IconSymbolName = keyof typeof MAPPING;
  * Ref: https://icons.expo.fyi  |  https://developer.apple.com/sf-symbols/
  */
 const MAPPING = {
-  "house.fill": "home",
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
@@ -34,6 +33,23 @@ const MAPPING = {
   "minus.circle.fill": "remove-circle",
   "xmark.circle.fill": "cancel",
   "checkmark.circle.fill": "check-circle",
+
+  // Categorie
+  "house.fill": "home",
+  "fork.knife": "restaurant",
+  "car.fill": "directions-car",
+  "heart.fill": "favorite",
+  "gamecontroller.fill": "sports-esports",
+  "bag.fill": "shopping-bag",
+  "arrow.clockwise": "autorenew",
+  "bolt.fill": "bolt",
+  "graduationcap.fill": "school",
+  airplane: "flight",
+  "briefcase.fill": "work",
+  laptopcomputer: "laptop",
+  "chart.line.uptrend.xyaxis": "trending-up",
+  "gift.fill": "card-giftcard",
+  "tag.fill": "label",
 } as IconMapping;
 
 type Props = {
