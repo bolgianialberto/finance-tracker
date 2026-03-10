@@ -12,6 +12,7 @@ type Props = {
   icon: IconSymbolName;
   variant?: CardVariant;
   vertical?: boolean;
+  loading?: boolean;
 };
 
 export function StatsCard({

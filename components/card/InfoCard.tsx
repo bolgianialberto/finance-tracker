@@ -10,6 +10,7 @@ type Props = {
   caption: string;
   vertical?: boolean;
   variant?: CardVariant;
+  loading?: boolean;
 };
 
 export function InfoCard({

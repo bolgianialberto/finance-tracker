@@ -3,12 +3,14 @@ import { StatsCard } from "@/components/card/StatsCard";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { Colors, Spacing } from "@/constants/theme";
+import { useHomeData } from "@/hooks/use-home-data";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const styles = useStyles();
+  const { data, loading } = useHomeData();
 
   return (
     <SafeAreaView style={styles.externalContainer}>
@@ -20,37 +22,47 @@ export default function HomeScreen() {
       <View style={styles.container}>
         <StatsCard
           title="Total Balance"
-          value={12450}
+          value={data?.totalBalance ?? 0}
           icon="dollarsign"
           variant="default"
+          loading={loading} // passa loading alla card se la supporta
         />
 
         <View style={styles.rowContainer}>
           <View style={styles.cardView}>
             <StatsCard
               title="Income"
-              value={1879}
+              value={data?.income ?? 0}
               icon="arrow.up.forward"
               variant="success"
               vertical={true}
+              loading={loading}
             />
           </View>
           <View style={styles.cardView}>
             <StatsCard
               title="Expenses"
-              value={543}
+              value={data?.expenses ?? 0}
               icon="arrow.down.forward"
               variant="danger"
               vertical={true}
+              loading={loading}
             />
           </View>
         </View>
 
         <InfoCard
           title="Net Savings"
-          value={1346}
-          caption="Better than the last month!"
+          value={data?.netSavings ?? 0}
+          caption={
+            data
+              ? data.netSavings >= 0
+                ? "Ottimo mese! 🎉"
+                : "Attenzione alle spese 📉"
+              : "..."
+          }
           variant="primary"
+          loading={loading}
         />
       </View>
     </SafeAreaView>
