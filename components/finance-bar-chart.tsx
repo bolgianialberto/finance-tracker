@@ -1,5 +1,6 @@
 import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { ChartType } from "@/models/chart-type";
 import { SelectedBar } from "@/models/selected-bar";
 import { TimeRange } from "@/models/time-range";
 import { useEffect, useRef, useState } from "react";
@@ -16,6 +17,7 @@ type Props = {
   barWidth?: number;
   onLoadMore?: (direction: "left" | "right") => void;
   canLoadMore?: { left: boolean; right: boolean };
+  type: ChartType;
 };
 
 export function FinanceBarChart({
@@ -25,6 +27,7 @@ export function FinanceBarChart({
   barWidth = 22,
   onLoadMore,
   canLoadMore = { left: false, right: false },
+  type,
 }: Props) {
   const { colors } = useTheme();
   const styles = useStyles();
@@ -155,65 +158,91 @@ export function FinanceBarChart({
             const expenseH = scaleY(item.expenses);
             const resultH = scaleY(item.result ?? 0);
 
-            const hitPaddingX = 6;
-            const hitPaddingY = 6;
             const expensesX = xStart + barWidth + barGap;
             const resultX = xStart + (barWidth + barGap) * 2;
+
+            // Dentro il data.map, sostituisci le x fisse con queste
+            const showIncome = type !== "expense";
+            const showExpense = type !== "income";
+            const showResult = type === "general";
+
+            // Conta quante barre ci sono
+            const visibleBars = [showIncome, showExpense, showResult].filter(
+              Boolean,
+            ).length;
+
+            // Larghezza totale occupata dalle barre visibili
+            const totalBarsWidth =
+              visibleBars * barWidth + (visibleBars - 1) * barGap;
+
+            // Punto di partenza per centrare il gruppo nel groupWidth
+            const centerOffset = (groupWidth - groupGap - totalBarsWidth) / 2;
+
+            // Posizioni dinamiche
+            let barIndex = 0;
+            const getBarX = () =>
+              xStart + centerOffset + barIndex++ * (barWidth + barGap);
 
             return (
               <View key={item.date.toISOString()}>
                 {/* Income Bar */}
-                <AnimatedBar
-                  x={xStart}
-                  targetHeight={incomeH}
-                  width={barWidth}
-                  color={incomeColor}
-                  zeroY={zeroY}
-                  onPress={() =>
-                    setSelectedBar({
-                      x: xStart + barWidth / 2,
-                      y: zeroY - incomeH,
-                      value: item.income,
-                      kind: "income",
-                    })
-                  }
-                />
+                {showIncome && (
+                  <AnimatedBar
+                    x={getBarX()}
+                    targetHeight={incomeH}
+                    width={barWidth}
+                    color={incomeColor}
+                    zeroY={zeroY}
+                    onPress={() =>
+                      setSelectedBar({
+                        x: xStart + barWidth / 2,
+                        y: zeroY - incomeH,
+                        value: item.income,
+                        kind: "income",
+                      })
+                    }
+                  />
+                )}
 
                 {/* Expenses Bar */}
-                <AnimatedBar
-                  x={expensesX}
-                  targetHeight={expenseH}
-                  width={barWidth}
-                  color={expenseColor}
-                  zeroY={zeroY}
-                  onPress={() =>
-                    setSelectedBar({
-                      x: expensesX + barWidth / 2,
-                      y: zeroY - expenseH,
-                      value: item.expenses,
-                      kind: "expense",
-                    })
-                  }
-                />
+                {showExpense && (
+                  <AnimatedBar
+                    x={getBarX()}
+                    targetHeight={expenseH}
+                    width={barWidth}
+                    color={expenseColor}
+                    zeroY={zeroY}
+                    onPress={() =>
+                      setSelectedBar({
+                        x: expensesX + barWidth / 2,
+                        y: zeroY - expenseH,
+                        value: item.expenses,
+                        kind: "expense",
+                      })
+                    }
+                  />
+                )}
 
                 {/* Result Bar */}
-                <AnimatedBar
-                  x={resultX}
-                  targetHeight={resultH}
-                  width={barWidth}
-                  color={item.result! >= 0 ? gainColor : lossColor}
-                  zeroY={zeroY}
-                  onPress={() =>
-                    setSelectedBar({
-                      x: resultX + barWidth / 2,
-                      y: zeroY - resultH,
-                      value: item.result ?? 0,
-                      kind: "result",
-                    })
-                  }
-                />
+                {showResult && (
+                  <AnimatedBar
+                    x={getBarX()}
+                    targetHeight={resultH}
+                    width={barWidth}
+                    color={item.result! >= 0 ? gainColor : lossColor}
+                    zeroY={zeroY}
+                    onPress={() =>
+                      setSelectedBar({
+                        x: resultX + barWidth / 2,
+                        y: zeroY - resultH,
+                        value: item.result ?? 0,
+                        kind: "result",
+                      })
+                    }
+                  />
+                )}
 
-                {/* Label periodo */}
+                {/* Label principale — numero giorno o mese/anno */}
                 <SvgText
                   x={xStart + (barWidth * 3 + barGap * 2) / 2}
                   y={zeroY + 14}
@@ -223,6 +252,20 @@ export function FinanceBarChart({
                 >
                   {item.label}
                 </SvgText>
+
+                {/* Sottolabel — solo per range "day" */}
+                {item.subLabel && (
+                  <SvgText
+                    x={xStart + (barWidth * 3 + barGap * 2) / 2}
+                    y={zeroY + 25} // 11px sotto la prima riga
+                    fontSize={9}
+                    fill={axisColor}
+                    textAnchor="middle"
+                    opacity={0.6}
+                  >
+                    {item.subLabel}
+                  </SvgText>
+                )}
               </View>
             );
           })}

@@ -1,1 +1,1 @@
-export type ChartType = "income" | "expenses" | "general";
+export type ChartType = "income" | "expense" | "general";

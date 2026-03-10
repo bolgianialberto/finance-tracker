@@ -42,6 +42,7 @@ export default function ChartScreen() {
             range={range}
             onLoadMore={loadMore}
             canLoadMore={canLoadMore}
+            type={type}
           />
         </ChartCard>
       </View>

@@ -24,6 +24,7 @@ function getMonthRange(): { firstDay: string; lastDay: string } {
   return { firstDay, lastDay };
 }
 
+// Schermata Transactions — solo mese corrente, filtrata per tipo
 export async function fetchTransactionsData(
   type: Exclude<FinanceType, "general">,
 ): Promise<{
@@ -35,27 +36,13 @@ export async function fetchTransactionsData(
   const userId = await getUserId();
   const { firstDay, lastDay } = getMonthRange();
 
-  // Una sola query con join a categories e accounts
   const { data, error } = await supabase
     .from("transactions")
     .select(
       `
-      id,
-      amount,
-      type,
-      note,
-      date,
-      category_id,
-      category:categories (
-        id,
-        name,
-        icon,
-        color
-      ),
-      account:accounts (
-        id,
-        name
-      )
+      id, amount, type, note, date, category_id,
+      category:categories ( id, name, icon, color ),
+      account:accounts ( id, name )
     `,
     )
     .eq("user_id", userId)
@@ -66,17 +53,51 @@ export async function fetchTransactionsData(
     .order("date", { ascending: false });
 
   if (error) throw error;
-  if (!data || data.length === 0) {
+  if (!data || data.length === 0)
     return {
       categoryStats: [],
       categoryAmounts: [],
       transactions: [],
       total: 0,
     };
+
+  const transactions = mapToTransactions(data);
+  const { categoryStats, categoryAmounts, total } = groupByCategory(data);
+  return { categoryStats, categoryAmounts, transactions, total };
+}
+
+// Schermata Charts — TUTTE le transazioni, nessun filtro mese
+// type "general" = prende sia income che expense
+export async function fetchAllTransactions(
+  type: FinanceType,
+): Promise<Transaction[]> {
+  const userId = await getUserId();
+
+  let query = supabase
+    .from("transactions")
+    .select(
+      `
+      id, amount, type, note, date, category_id,
+      account:accounts ( id, name )
+    `,
+    )
+    .eq("user_id", userId)
+    .is("transfer_id", null)
+    .order("date", { ascending: true });
+
+  if (type !== "general") {
+    query = query.eq("type", type);
   }
 
-  // Mappa le transazioni nel modello Transaction
-  const transactions: Transaction[] = data.map((row: any) => ({
+  const { data, error } = await query;
+  if (error) throw error;
+  return data ? mapToTransactions(data) : [];
+}
+
+// --- Helpers condivisi ---
+
+function mapToTransactions(data: any[]): Transaction[] {
+  return data.map((row) => ({
     id: row.id,
     categoryId: row.category_id,
     amount: row.amount,
@@ -85,11 +106,16 @@ export async function fetchTransactionsData(
     type: row.type,
     date: row.date,
   }));
+}
 
-  // Raggruppa per categoria per costruire CategoryStats e CategoryAmount
+function groupByCategory(data: any[]): {
+  categoryStats: CategoryStats[];
+  categoryAmounts: CategoryAmount[];
+  total: number;
+} {
   const statsMap = new Map<string, CategoryStats>();
 
-  for (const row of data as any[]) {
+  for (const row of data) {
     const cat = row.category;
     if (!cat) continue;
 
@@ -111,18 +137,15 @@ export async function fetchTransactionsData(
     entry.transactionCount += 1;
   }
 
-  // Ordina per importo decrescente
   const categoryStats = Array.from(statsMap.values()).sort(
     (a, b) => b.amount - a.amount,
   );
 
-  // CategoryAmount è la stessa cosa ma senza transactionCount (serve al donut chart)
-  const categoryAmounts: CategoryAmount[] = categoryStats.map((s) => ({
+  const categoryAmounts = categoryStats.map((s) => ({
     category: s.category,
     amount: s.amount,
   }));
 
   const total = categoryStats.reduce((sum, s) => sum + s.amount, 0);
-
-  return { categoryStats, categoryAmounts, transactions, total };
+  return { categoryStats, categoryAmounts, total };
 }
