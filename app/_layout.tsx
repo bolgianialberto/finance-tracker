@@ -7,6 +7,7 @@ import { Session } from "@supabase/supabase-js";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -26,13 +27,11 @@ export default function RootLayout() {
   const segments = useSegments();
 
   useEffect(() => {
-    // Al primo avvio controlla se c'è già una sessione salvata
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
     });
 
-    // Ascolta login e logout in tempo reale
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -43,26 +42,32 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (loading) return; // aspetta che il check iniziale finisca
+    if (loading) return;
 
     const inAuthGroup = segments[0] === "(auth)";
 
     if (!session && !inAuthGroup) {
-      // Non loggato e non siamo già sul login → vai al login
       router.replace("/(auth)/login");
     } else if (session && inAuthGroup) {
-      // Loggato ma siamo ancora sul login → vai all'app
       router.replace("/(tabs)/home");
     }
   }, [session, loading, segments]);
 
   return (
-    <ThemeProvider value={theme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style={theme.dark ? "dark" : "light"} />
-    </ThemeProvider>
+    // GestureHandlerRootView è richiesto da @gorhom/bottom-sheet
+    // flex: 1 è obbligatorio, senza di esso l'app non si vede
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider value={theme}>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{ presentation: "modal", title: "Modal" }}
+          />
+        </Stack>
+        <StatusBar style={theme.dark ? "dark" : "light"} />
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }

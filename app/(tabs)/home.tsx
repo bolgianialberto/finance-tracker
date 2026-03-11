@@ -1,16 +1,30 @@
+import { AddTransactionSheet } from "@/components/addTransactionSheet";
 import { InfoCard } from "@/components/card/InfoCard";
 import { StatsCard } from "@/components/card/StatsCard";
+import { IconSymbol } from "@/components/ui/icon-symbol";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { Colors, Spacing } from "@/constants/theme";
 import { useHomeData } from "@/hooks/use-home-data";
 import { useTheme } from "@/hooks/use-theme";
-import { StyleSheet, View } from "react-native";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useRef } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const styles = useStyles();
-  const { data, loading } = useHomeData();
+  const { data, loading, refetch } = useHomeData();
+  const sheetRef = useRef<BottomSheet>(null);
+
+  function openSheet() {
+    sheetRef.current?.expand();
+  }
+
+  function handleTransactionAdded() {
+    // Ricarica i dati della home dopo l'inserimento
+    refetch();
+  }
 
   return (
     <SafeAreaView style={styles.externalContainer}>
@@ -25,7 +39,7 @@ export default function HomeScreen() {
           value={data?.totalBalance ?? 0}
           icon="dollarsign"
           variant="default"
-          loading={loading} // passa loading alla card se la supporta
+          loading={loading}
         />
 
         <View style={styles.rowContainer}>
@@ -64,7 +78,20 @@ export default function HomeScreen() {
           variant="primary"
           loading={loading}
         />
+
+        {/* FAB centrato sotto le card */}
+        <View style={styles.fabContainer}>
+          <Pressable
+            style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
+            onPress={openSheet}
+          >
+            <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
+          </Pressable>
+        </View>
       </View>
+
+      {/* Bottom Sheet */}
+      <AddTransactionSheet ref={sheetRef} onSuccess={handleTransactionAdded} />
     </SafeAreaView>
   );
 }
@@ -97,5 +124,26 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
     },
     cardView: {
       flex: 1,
+    },
+    fabContainer: {
+      alignItems: "center",
+      marginTop: spacing.xs,
+    },
+    fab: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: "#6B4EFF",
+      alignItems: "center",
+      justifyContent: "center",
+      shadowColor: "#6B4EFF",
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.45,
+      shadowRadius: 16,
+      elevation: 8,
+    },
+    fabPressed: {
+      opacity: 0.8,
+      transform: [{ scale: 0.95 }],
     },
   });

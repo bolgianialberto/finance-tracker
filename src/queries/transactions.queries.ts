@@ -41,7 +41,7 @@ export async function fetchTransactionsData(
     .select(
       `
       id, amount, type, note, date, category_id,
-      category:categories ( id, name, icon, color ),
+      category:categories ( id, name, icon, color, type ),
       account:accounts ( id, name )
     `,
     )
@@ -67,7 +67,6 @@ export async function fetchTransactionsData(
 }
 
 // Schermata Charts — TUTTE le transazioni, nessun filtro mese
-// type "general" = prende sia income che expense
 export async function fetchAllTransactions(
   type: FinanceType,
 ): Promise<Transaction[]> {
@@ -92,6 +91,34 @@ export async function fetchAllTransactions(
   const { data, error } = await query;
   if (error) throw error;
   return data ? mapToTransactions(data) : [];
+}
+
+// Inserisce una nuova transazione
+export async function insertTransaction(params: {
+  amount: number;
+  type: Exclude<FinanceType, "general">;
+  categoryId: string;
+  categoryName: string; // usato come nota di default se note è vuota
+  accountId: string;
+  date: string; // formato YYYY-MM-DD
+  note?: string;
+}): Promise<void> {
+  const userId = await getUserId();
+
+  // Se la nota è vuota usa il nome della categoria come titolo generico
+  const finalNote = params.note?.trim() || params.categoryName;
+
+  const { error } = await supabase.from("transactions").insert({
+    user_id: userId,
+    account_id: params.accountId,
+    category_id: params.categoryId,
+    amount: params.amount,
+    type: params.type,
+    note: finalNote,
+    date: params.date,
+  });
+
+  if (error) throw error;
 }
 
 // --- Helpers condivisi ---
@@ -126,6 +153,7 @@ function groupByCategory(data: any[]): {
           name: cat.name,
           icon: resolveIcon(cat.icon),
           color: cat.color,
+          type: cat.type,
         },
         amount: 0,
         transactionCount: 0,

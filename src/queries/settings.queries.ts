@@ -39,7 +39,7 @@ export async function fetchCategories(): Promise<Category[]> {
   // Prende le categorie globali (user_id IS NULL) + quelle dell'utente
   const { data, error } = await supabase
     .from("categories")
-    .select("id, name, icon, color")
+    .select("id, name, icon, color, type")
     .or(`user_id.is.null,user_id.eq.${userId}`)
     .eq("is_archived", false)
     .order("created_at", { ascending: true });
@@ -52,5 +52,6 @@ export async function fetchCategories(): Promise<Category[]> {
     name: row.name,
     icon: resolveIcon(row.icon),
     color: row.color,
+    type: row.type,
   }));
 }
