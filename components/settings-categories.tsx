@@ -87,12 +87,18 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
       backgroundColor: colors.pressedSettingsButton,
     },
     iconWrapper: {
-      width: 52,
-      height: 52,
-      borderRadius: spacing.lg,
       alignItems: "center",
       justifyContent: "center",
-      marginBottom: spacing.s,
+
+      padding: spacing.m,
+      borderRadius: spacing.m,
+      elevation: spacing.xxs,
+      shadowRadius: spacing.xs,
+
+      // iOS
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
     },
     addIconWrapper: {
       backgroundColor: "#EFF6FF",

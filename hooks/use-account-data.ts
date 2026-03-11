@@ -1,25 +1,28 @@
+import { Account } from "@/models/account";
+import { fetchAccounts } from "@/src/queries/settings.queries";
 import { useEffect, useState } from "react";
-import { mockAccounts } from "../mock/settings.mock";
-import { Account } from "../models/account";
 
-export function useSettingsData() {
+export function useAccountsData() {
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [loadingAccounts, setLoadingAccounts] = useState(false);
+  const [loadingAccounts, setLoadingAccounts] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  async function load() {
+    setLoadingAccounts(true);
+    setError(null);
+    try {
+      const data = await fetchAccounts();
+      setAccounts(data);
+    } catch (e: any) {
+      setError(e.message ?? "Errore sconosciuto");
+    } finally {
+      setLoadingAccounts(false);
+    }
+  }
 
   useEffect(() => {
-    setLoadingAccounts(true);
-
-    // 🔁 oggi mock
-    setAccounts(mockAccounts);
-
-    setLoadingAccounts(false);
-
-    // 🚀 domani:
-    // fetch("/api/accounts")
+    load();
   }, []);
 
-  return {
-    accounts,
-    loadingAccounts,
-  };
+  return { accounts, loadingAccounts, error, refetch: load };
 }

@@ -4,7 +4,7 @@ import { SettingsPreferences } from "@/components/settings-preferences";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
 import { Colors, Spacing } from "@/constants/theme";
-import { useSettingsData } from "@/hooks/use-account-data";
+import { useAccountsData } from "@/hooks/use-account-data";
 import { useCategoriesData } from "@/hooks/use-category-data";
 import { useTheme } from "@/hooks/use-theme";
 import { supabase } from "@/src/lib/supabase";
@@ -18,7 +18,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
-  const { accounts, loadingAccounts } = useSettingsData();
+  const { accounts, loadingAccounts } = useAccountsData();
   const { categories, loadingCategories } = useCategoriesData();
   const styles = useStyles();
 
