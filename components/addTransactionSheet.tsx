@@ -1,7 +1,9 @@
-import { IconSymbol } from "@/components/ui/icon-symbol";
+import { FinanceToggle } from "@/components/finance-toggle";
 import { useAccountsData } from "@/hooks/use-account-data";
 import { useCategoriesData } from "@/hooks/use-category-data";
 import { useTheme } from "@/hooks/use-theme";
+import { Account } from "@/models/account";
+import { Category } from "@/models/category";
 import { FinanceType } from "@/models/finance-type";
 import { insertTransaction } from "@/src/queries/transactions.queries";
 import BottomSheet, {
@@ -19,6 +21,10 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { AccountList } from "./ui/account-list";
+import { CategoryGrid } from "./ui/category-grid";
+import { ErrorText } from "./ui/error-text";
+import { SectionLabel } from "./ui/section-label";
 
 type Props = {
   onSuccess?: () => void;
@@ -28,8 +34,6 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
   ({ onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
     const { colors, spacing } = useTheme();
-
-    // 92% lascia un piccolo bordo in cima — si vede che è una modale
     const snapPoints = useMemo(() => ["85%"], []);
 
     const { accounts, loadingAccounts } = useAccountsData();
@@ -51,16 +55,26 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
     const [saving, setSaving] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Filtra le categorie per tipo — "both" appare sempre
     const filteredCategories = useMemo(
       () => categories.filter((c) => c.type === type || c.type === "general"),
       [categories, type],
     );
 
-    function handleTypeChange(newType: Exclude<FinanceType, "general">) {
+    function handleTypeChange(newType: FinanceType) {
+      if (newType === "general") return;
       setType(newType);
-      setSelectedCategoryId(null); // reset categoria quando cambia tipo
+      setSelectedCategoryId(null);
       setErrors({});
+    }
+
+    function handleCategorySelect(cat: Category) {
+      setSelectedCategoryId(cat.id);
+      setErrors((e) => ({ ...e, category: "" }));
+    }
+
+    function handleAccountSelect(acc: Account) {
+      setSelectedAccountId(acc.id);
+      setErrors((e) => ({ ...e, account: "" }));
     }
 
     function validate(): boolean {
@@ -129,7 +143,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
         topInset={insets.top + 16}
         enablePanDownToClose
         backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: colors.background }}
+        backgroundStyle={{ backgroundColor: colors.addTransactionBackground }}
         handleIndicatorStyle={{
           backgroundColor: colors.settingDivider,
           width: 40,
@@ -138,7 +152,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
         <BottomSheetScrollView
           contentContainerStyle={[
             styles.content,
-            { paddingBottom: insets.bottom + 32, gap: spacing.md },
+            { paddingBottom: insets.bottom + spacing.xl },
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -150,78 +164,34 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
             </Text>
           </View>
 
-          {/* Divider */}
-          <View style={{ height: 1, backgroundColor: colors.settingDivider }} />
-
-          {/* Toggle Expense / Income */}
           <View
-            style={[
-              styles.toggleRow,
-              { backgroundColor: colors.transLegendBackground },
-            ]}
-          >
-            <Pressable
-              style={[
-                styles.toggleBtn,
-                isExpense && { backgroundColor: "#EF4444" },
-              ]}
-              onPress={() => handleTypeChange("expense")}
-            >
-              <Text
-                style={[
-                  styles.toggleText,
-                  {
-                    color: isExpense ? "#fff" : colors.text,
-                    opacity: isExpense ? 1 : 0.4,
-                  },
-                ]}
-              >
-                Expense
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.toggleBtn,
-                !isExpense && { backgroundColor: "#22C55E" },
-              ]}
-              onPress={() => handleTypeChange("income")}
-            >
-              <Text
-                style={[
-                  styles.toggleText,
-                  {
-                    color: !isExpense ? "#fff" : colors.text,
-                    opacity: !isExpense ? 1 : 0.4,
-                  },
-                ]}
-              >
-                Income
-              </Text>
-            </Pressable>
-          </View>
+            style={[styles.divider, { backgroundColor: colors.settingDivider }]}
+          />
+
+          {/* Toggle — riuso FinanceToggle esistente, solo expense/income */}
+          <FinanceToggle
+            value={type}
+            onChange={handleTypeChange}
+            getGeneral={false}
+            getIncome={true}
+            getExpenses={true}
+          />
 
           {/* Importo */}
-          <View style={{ gap: spacing.s }}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Amount *
-            </Text>
+          <View style={styles.field}>
+            <SectionLabel label="Amount *" />
             <View
               style={[
                 styles.amountRow,
                 {
+                  backgroundColor: colors.background,
                   borderColor: errors.amount
                     ? "#EF4444"
                     : colors.settingDivider,
-                  backgroundColor: colors.transLegendBackground,
                 },
               ]}
             >
-              <Text
-                style={[
-                  styles.currencySymbol,
-                  { color: colors.text, opacity: 0.4 },
-                ]}
-              >
+              <Text style={[styles.currencySymbol, { color: colors.text }]}>
                 €
               </Text>
               <TextInput
@@ -236,157 +206,63 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
                 }}
               />
             </View>
-            {errors.amount ? (
-              <Text style={styles.errorText}>{errors.amount}</Text>
-            ) : null}
+            <ErrorText message={errors.amount} />
           </View>
 
           {/* Categorie */}
-          <View style={{ gap: spacing.s }}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Category *
-            </Text>
+          <View style={styles.field}>
+            <SectionLabel label="Category *" />
             {loadingCategories ? (
               <ActivityIndicator />
             ) : (
               <View
                 style={[
-                  styles.card,
-                  { backgroundColor: colors.transLegendBackground },
+                  styles.categoryRow,
+                  {
+                    borderColor: errors.category
+                      ? "#EF4444"
+                      : colors.settingDivider,
+                  },
                 ]}
               >
-                <View style={styles.categoryGrid}>
-                  {filteredCategories.map((cat) => {
-                    const isSelected = selectedCategoryId === cat.id;
-                    return (
-                      <Pressable
-                        key={cat.id}
-                        style={({ pressed }) => [
-                          styles.categoryItem,
-                          pressed && { opacity: 0.7 },
-                          isSelected && { backgroundColor: cat.color + "18" },
-                        ]}
-                        onPress={() => {
-                          setSelectedCategoryId(cat.id);
-                          setErrors((e) => ({ ...e, category: "" }));
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.categoryIconWrapper,
-                            { backgroundColor: cat.color },
-                            isSelected && styles.categoryIconSelected,
-                          ]}
-                        >
-                          <IconSymbol name={cat.icon} size={18} color="#fff" />
-                        </View>
-                        <Text
-                          style={[
-                            styles.categoryLabel,
-                            { color: colors.text },
-                            isSelected && {
-                              color: cat.color,
-                              fontWeight: "700",
-                            },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {cat.name}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
+                <CategoryGrid
+                  categories={filteredCategories}
+                  selectedId={selectedCategoryId}
+                  onPress={handleCategorySelect}
+                  // niente onAdd — siamo nella modale, non nelle settings
+                  error={!!errors.category}
+                />
               </View>
             )}
-            {errors.category ? (
-              <Text style={styles.errorText}>{errors.category}</Text>
-            ) : null}
+            <ErrorText message={errors.category} />
           </View>
 
           {/* Account */}
-          <View style={{ gap: spacing.s }}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Account *
-            </Text>
+          <View style={styles.field}>
+            <SectionLabel label="Account *" />
             {loadingAccounts ? (
               <ActivityIndicator />
             ) : (
-              <View
-                style={[
-                  styles.card,
-                  { backgroundColor: colors.transLegendBackground },
-                ]}
-              >
-                {accounts.map((acc, index) => {
-                  const isSelected = selectedAccountId === acc.id;
-                  return (
-                    <View key={acc.id}>
-                      <Pressable
-                        style={({ pressed }) => [
-                          styles.accountRow,
-                          pressed && { opacity: 0.7 },
-                        ]}
-                        onPress={() => {
-                          setSelectedAccountId(acc.id);
-                          setErrors((e) => ({ ...e, account: "" }));
-                        }}
-                      >
-                        <View
-                          style={[
-                            styles.accountDot,
-                            { backgroundColor: acc.color },
-                          ]}
-                        />
-                        <Text
-                          style={[
-                            styles.accountName,
-                            { color: colors.text },
-                            isSelected && { fontWeight: "700" },
-                          ]}
-                        >
-                          {acc.name}
-                        </Text>
-                        {isSelected && (
-                          <IconSymbol
-                            name="checkmark.circle.fill"
-                            size={18}
-                            color="#22C55E"
-                          />
-                        )}
-                      </Pressable>
-                      {index < accounts.length - 1 && (
-                        <View
-                          style={[
-                            styles.rowDivider,
-                            {
-                              backgroundColor: colors.settingDivider,
-                              marginLeft: 40,
-                            },
-                          ]}
-                        />
-                      )}
-                    </View>
-                  );
-                })}
-              </View>
+              <AccountList
+                accounts={accounts}
+                selectedId={selectedAccountId}
+                onPress={handleAccountSelect}
+                // niente onAdd — siamo nella modale
+                error={!!errors.account}
+              />
             )}
-            {errors.account ? (
-              <Text style={styles.errorText}>{errors.account}</Text>
-            ) : null}
+            <ErrorText message={errors.account} />
           </View>
 
           {/* Data */}
-          <View style={{ gap: spacing.s }}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Date *
-            </Text>
+          <View style={styles.field}>
+            <SectionLabel label="Date *" />
             <TextInput
               style={[
                 styles.input,
                 {
                   color: colors.text,
-                  backgroundColor: colors.transLegendBackground,
+                  backgroundColor: colors.background,
                   borderColor: errors.date ? "#EF4444" : colors.settingDivider,
                 },
               ]}
@@ -398,26 +274,19 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
               placeholder="YYYY-MM-DD"
               placeholderTextColor={colors.text + "40"}
             />
-            {errors.date ? (
-              <Text style={styles.errorText}>{errors.date}</Text>
-            ) : null}
+            <ErrorText message={errors.date} />
           </View>
 
           {/* Nota */}
-          <View style={{ gap: spacing.s }}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Note{" "}
-              <Text style={{ fontWeight: "400", opacity: 0.5 }}>
-                (optional)
-              </Text>
-            </Text>
+          <View style={styles.field}>
+            <SectionLabel label="Note" optional />
             <TextInput
               style={[
                 styles.input,
                 styles.noteInput,
                 {
                   color: colors.text,
-                  backgroundColor: colors.transLegendBackground,
+                  backgroundColor: colors.background,
                   borderColor: colors.settingDivider,
                 },
               ]}
@@ -460,6 +329,7 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: 16,
     paddingTop: 8,
+    gap: 20,
   },
   headerRow: {
     alignItems: "center",
@@ -470,33 +340,12 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     letterSpacing: -0.3,
   },
-
-  // Toggle
-  toggleRow: {
-    flexDirection: "row",
-    borderRadius: 14,
-    padding: 4,
+  divider: {
+    height: 1,
   },
-  toggleBtn: {
-    flex: 1,
-    paddingVertical: 11,
-    alignItems: "center",
-    borderRadius: 11,
+  field: {
+    gap: 8,
   },
-  toggleText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-
-  // Section title — stile uguale a SettingsAccounts/Categories
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: "600",
-    letterSpacing: 0.3,
-    marginLeft: 4,
-  },
-
-  // Amount
   amountRow: {
     flexDirection: "row",
     alignItems: "center",
@@ -504,10 +353,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderWidth: StyleSheet.hairlineWidth,
   },
+  categoryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  accountsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+  },
   currencySymbol: {
     fontSize: 20,
     fontWeight: "700",
     marginRight: 8,
+    opacity: 0.4,
   },
   amountInput: {
     flex: 1,
@@ -515,70 +377,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "700",
   },
-
-  // Card — stesso stile di SettingsAccounts
-  card: {
-    borderRadius: 12,
-    overflow: "hidden",
-  },
-
-  // Categorie — stessa griglia di SettingsCategories
-  categoryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    padding: 8,
-  },
-  categoryItem: {
-    width: "25%",
-    alignItems: "center",
-    paddingVertical: 10,
-    borderRadius: 10,
-    gap: 6,
-  },
-  categoryIconWrapper: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  categoryIconSelected: {
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  categoryLabel: {
-    fontSize: 11,
-    textAlign: "center",
-  },
-
-  // Account — stesso stile di SettingsAccounts
-  accountRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  accountDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  accountName: {
-    flex: 1,
-    fontSize: 15,
-  },
-  rowDivider: {
-    height: StyleSheet.hairlineWidth,
-  },
-
-  // Input
   input: {
     borderRadius: 12,
     paddingHorizontal: 16,
@@ -590,13 +388,6 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: "top",
   },
-  errorText: {
-    color: "#EF4444",
-    fontSize: 12,
-    marginLeft: 4,
-  },
-
-  // Submit
   submitBtn: {
     borderRadius: 14,
     paddingVertical: 16,

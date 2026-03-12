@@ -162,6 +162,7 @@ const colors = {
   backgroundCard: palette.white,
   backgroundMuted: palette.offWhite,
   transLegendBackground: palette.offWhite,
+  addTransactionBackground: palette.offWhite,
 
   // icone e tab bar
   icon: palette.grey,
@@ -204,6 +205,7 @@ const colors = {
 
   //button
   pressedSettingsButton: palette.offWhite,
+  addTransactionButton: palette.purple,
 } as const;
 
 // ─────────────────────────────────────────────

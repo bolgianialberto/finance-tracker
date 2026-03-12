@@ -33,6 +33,7 @@ const MAPPING = {
   "minus.circle.fill": "remove-circle",
   "xmark.circle.fill": "cancel",
   "checkmark.circle.fill": "check-circle",
+  plus: "add",
 
   // Categorie
   "house.fill": "home",

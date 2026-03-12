@@ -34,50 +34,52 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.container}>
-        <StatsCard
-          title="Total Balance"
-          value={data?.totalBalance ?? 0}
-          icon="dollarsign"
-          variant="default"
-          loading={loading}
-        />
+        <View style={styles.cards}>
+          <StatsCard
+            title="Total Balance"
+            value={data?.totalBalance ?? 0}
+            icon="dollarsign"
+            variant="default"
+            loading={loading}
+          />
 
-        <View style={styles.rowContainer}>
-          <View style={styles.cardView}>
-            <StatsCard
-              title="Income"
-              value={data?.income ?? 0}
-              icon="arrow.up.forward"
-              variant="success"
-              vertical={true}
-              loading={loading}
-            />
+          <View style={styles.rowContainer}>
+            <View style={styles.cardView}>
+              <StatsCard
+                title="Income"
+                value={data?.income ?? 0}
+                icon="arrow.up.forward"
+                variant="success"
+                vertical={true}
+                loading={loading}
+              />
+            </View>
+            <View style={styles.cardView}>
+              <StatsCard
+                title="Expenses"
+                value={data?.expenses ?? 0}
+                icon="arrow.down.forward"
+                variant="danger"
+                vertical={true}
+                loading={loading}
+              />
+            </View>
           </View>
-          <View style={styles.cardView}>
-            <StatsCard
-              title="Expenses"
-              value={data?.expenses ?? 0}
-              icon="arrow.down.forward"
-              variant="danger"
-              vertical={true}
-              loading={loading}
-            />
-          </View>
+
+          <InfoCard
+            title="Net Savings"
+            value={data?.netSavings ?? 0}
+            caption={
+              data
+                ? data.netSavings >= 0
+                  ? "Ottimo mese! 🎉"
+                  : "Attenzione alle spese 📉"
+                : "..."
+            }
+            variant="primary"
+            loading={loading}
+          />
         </View>
-
-        <InfoCard
-          title="Net Savings"
-          value={data?.netSavings ?? 0}
-          caption={
-            data
-              ? data.netSavings >= 0
-                ? "Ottimo mese! 🎉"
-                : "Attenzione alle spese 📉"
-              : "..."
-          }
-          variant="primary"
-          loading={loading}
-        />
 
         {/* FAB centrato sotto le card */}
         <View style={styles.fabContainer}>
@@ -85,7 +87,7 @@ export default function HomeScreen() {
             style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
             onPress={openSheet}
           >
-            <IconSymbol name="plus.circle.fill" size={28} color="#fff" />
+            <IconSymbol name="plus" size={45} color="#fff" />
           </Pressable>
         </View>
       </View>
@@ -103,6 +105,10 @@ const useStyles = () => {
 
 const createStyles = (colors: Colors, spacing: Spacing) =>
   StyleSheet.create({
+    cards: {
+      gap: spacing.md,
+      // niente flex — occupa solo lo spazio che serve
+    },
     header: {
       paddingHorizontal: spacing.md,
       paddingTop: spacing.sm,
@@ -126,14 +132,15 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
       flex: 1,
     },
     fabContainer: {
+      flex: 1,
+      justifyContent: "center",
       alignItems: "center",
-      marginTop: spacing.xs,
     },
     fab: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      backgroundColor: "#6B4EFF",
+      width: 80,
+      height: 80,
+      borderRadius: 50,
+      backgroundColor: colors.addTransactionButton,
       alignItems: "center",
       justifyContent: "center",
       shadowColor: "#6B4EFF",

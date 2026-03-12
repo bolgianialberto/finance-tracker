@@ -9,9 +9,15 @@ type Props = {
   accounts: Account[];
   loading: boolean;
   onAddAccount?: () => void;
+  onPressAccount?: (account: Account) => void;
 };
 
-export function SettingsAccounts({ accounts, loading, onAddAccount }: Props) {
+export function SettingsAccounts({
+  accounts,
+  loading,
+  onAddAccount,
+  onPressAccount,
+}: Props) {
   const styles = useStyles();
 
   if (loading) {
@@ -29,6 +35,7 @@ export function SettingsAccounts({ accounts, loading, onAddAccount }: Props) {
           <View key={item.id}>
             <Pressable
               style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+              onPress={() => onPressAccount?.(item)}
             >
               <View
                 style={[styles.iconWrapper, { backgroundColor: item.color }]}
@@ -50,7 +57,6 @@ export function SettingsAccounts({ accounts, loading, onAddAccount }: Props) {
           </View>
         ))}
 
-        {/* Divider prima del bottone aggiungi */}
         {accounts.length > 0 && <View style={styles.divider} />}
 
         <Pressable

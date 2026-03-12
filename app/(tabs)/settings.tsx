@@ -50,13 +50,24 @@ export default function SettingsScreen() {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <SettingsAccounts accounts={accounts} loading={loadingAccounts} />
+          <SettingsAccounts
+            accounts={accounts}
+            loading={loadingAccounts}
+            onAddAccount={() => {
+              /* apri modale add */
+            }}
+            onPressAccount={(acc) => {
+              /* apri modale edit */
+            }}
+          />
 
           <View style={styles.sectionDivider} />
 
           <SettingsCategories
             categories={categories}
             loading={loadingCategories}
+            onAddCategory={() => console.log("apri modale add category")}
+            onPressCategory={(cat) => console.log("modifica categoria", cat.id)}
           />
 
           <View style={styles.sectionDivider} />

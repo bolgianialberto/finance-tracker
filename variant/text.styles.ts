@@ -17,12 +17,12 @@ export const TEXT_STYLES: Record<TextVariant, TextStyle> = {
     fontFamily: theme.typography.family.sans,
   },
   caption: {
-    fontSize: theme.typography.size.sm, // 12
+    fontSize: theme.typography.size.sm + 1, // 13
     lineHeight: 24,
     fontFamily: theme.typography.family.sans,
   },
   captionBold: {
-    fontSize: theme.typography.size.sm, // 12
+    fontSize: theme.typography.size.sm + 1, // 13
     lineHeight: 24,
     fontWeight: theme.typography.weight.semibold,
     fontFamily: theme.typography.family.sans,
