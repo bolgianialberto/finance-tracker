@@ -23,6 +23,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AccountList } from "./ui/account-list";
 import { CategoryGrid } from "./ui/category-grid";
+import { DatePicker } from "./ui/date-picker";
 import { ErrorText } from "./ui/error-text";
 import { SectionLabel } from "./ui/section-label";
 
@@ -152,7 +153,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
         <BottomSheetScrollView
           contentContainerStyle={[
             styles.content,
-            { paddingBottom: insets.bottom + spacing.xl },
+            { paddingBottom: insets.bottom },
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -257,22 +258,13 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
           {/* Data */}
           <View style={styles.field}>
             <SectionLabel label="Date *" />
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  backgroundColor: colors.background,
-                  borderColor: errors.date ? "#EF4444" : colors.settingDivider,
-                },
-              ]}
+            <DatePicker
               value={date}
-              onChangeText={(v) => {
+              onChange={(v) => {
                 setDate(v);
                 setErrors((e) => ({ ...e, date: "" }));
               }}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor={colors.text + "40"}
+              error={!!errors.date}
             />
             <ErrorText message={errors.date} />
           </View>
