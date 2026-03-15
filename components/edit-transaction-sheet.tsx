@@ -1,39 +1,50 @@
 import { FinanceToggle } from "@/components/finance-toggle";
+import { AccountList } from "@/components/ui/account-list";
+import { CategoryGrid } from "@/components/ui/category-grid";
+import { DatePicker } from "@/components/ui/date-picker";
+import { ErrorText } from "@/components/ui/error-text";
+import { SectionLabel } from "@/components/ui/section-label";
 import { useAccountsData } from "@/hooks/use-account-data";
 import { useCategoriesData } from "@/hooks/use-category-data";
 import { useTheme } from "@/hooks/use-theme";
 import { Account } from "@/models/account";
 import { Category } from "@/models/category";
 import { FinanceType } from "@/models/finance-type";
-import { insertTransaction } from "@/src/queries/transactions.queries";
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { Transaction } from "@/models/transaction";
 import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    deleteTransaction,
+    updateTransaction,
+} from "@/src/queries/transactions.queries";
+import BottomSheet, {
+    BottomSheetBackdrop,
+    BottomSheetScrollView,
+} from "@gorhom/bottom-sheet";
+import {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
+import {
+    ActivityIndicator,
+    Alert,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AccountList } from "./ui/account-list";
-import { CategoryGrid } from "./ui/category-grid";
-import { DatePicker } from "./ui/date-picker";
-import { ErrorText } from "./ui/error-text";
-import { SectionLabel } from "./ui/section-label";
 
 type Props = {
+  transaction: Transaction | null;
   onSuccess?: () => void;
-  initialType?: Exclude<FinanceType, "general">;
 };
 
-export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
-  ({ onSuccess, initialType = "expense" }, ref) => {
+export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
+  ({ transaction, onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
     const { colors, spacing } = useTheme();
     const snapPoints = useMemo(() => ["85%"], []);
@@ -41,8 +52,15 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
     const { accounts, loadingAccounts } = useAccountsData();
     const { categories, loadingCategories } = useCategoriesData();
 
-    const [type, setType] =
-      useState<Exclude<FinanceType, "general">>(initialType);
+    const [type, setType] = useState<Exclude<FinanceType, "general">>(
+      () =>
+        (transaction?.type === "general"
+          ? "expense"
+          : (transaction?.type ?? "expense")) as Exclude<
+          FinanceType,
+          "general"
+        >,
+    );
     const [amount, setAmount] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
       null,
@@ -55,7 +73,13 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
     );
     const [note, setNote] = useState("");
     const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
+
+    const transactionRef = useRef(transaction);
+    useEffect(() => {
+      transactionRef.current = transaction;
+    }, [transaction]);
 
     const filteredCategories = useMemo(
       () => categories.filter((c) => c.type === type || c.type === "general"),
@@ -90,37 +114,59 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
       return Object.keys(newErrors).length === 0;
     }
 
-    async function handleSubmit() {
-      if (!validate()) return;
-      const selectedCategory = categories.find(
-        (c) => c.id === selectedCategoryId,
-      );
+    async function handleSave() {
+      if (!transaction || !validate()) return;
       setSaving(true);
       try {
-        await insertTransaction({
+        await updateTransaction({
+          id: transaction.id,
           amount: parseFloat(amount),
           type,
           categoryId: selectedCategoryId!,
-          categoryName: selectedCategory?.name ?? "Transazione",
           accountId: selectedAccountId!,
           date,
-          note,
+          note: note || undefined,
         });
-        setAmount("");
-        setSelectedCategoryId(null);
-        setNote("");
-        setDate(new Date().toISOString().split("T")[0]);
-        setErrors({});
         (ref as any)?.current?.close();
         onSuccess?.();
       } catch (e: any) {
         Alert.alert(
           "Errore",
-          e.message ?? "Impossibile salvare la transazione",
+          e.message ?? "Impossibile aggiornare la transazione",
         );
       } finally {
         setSaving(false);
       }
+    }
+
+    function handleDelete() {
+      if (!transaction) return;
+      Alert.alert(
+        "Elimina transazione",
+        "Sei sicuro di voler eliminare questa transazione? L'operazione non è reversibile.",
+        [
+          { text: "Annulla", style: "cancel" },
+          {
+            text: "Elimina",
+            style: "destructive",
+            onPress: async () => {
+              setDeleting(true);
+              try {
+                await deleteTransaction(transaction.id);
+                (ref as any)?.current?.close();
+                onSuccess?.();
+              } catch (e: any) {
+                Alert.alert(
+                  "Errore",
+                  e.message ?? "Impossibile eliminare la transazione",
+                );
+              } finally {
+                setDeleting(false);
+              }
+            },
+          },
+        ],
+      );
     }
 
     const renderBackdrop = useCallback(
@@ -151,9 +197,19 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
           width: 40,
         }}
         onChange={(index) => {
-          if (index >= 0) {
-            // La modale si sta aprendo — resetta al tipo corrente
-            setType(initialType);
+          const tx = transactionRef.current;
+          if (index >= 0 && tx) {
+            setType(
+              tx.type === "general"
+                ? "expense"
+                : (tx.type as Exclude<FinanceType, "general">),
+            );
+            setAmount(tx.amount.toString());
+            setSelectedCategoryId(tx.categoryId);
+            setSelectedAccountId(tx.accountId);
+            setDate(tx.date);
+            setNote(tx.note ?? "");
+            setErrors({});
           }
         }}
       >
@@ -168,7 +224,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
           {/* Header */}
           <View style={styles.headerRow}>
             <Text style={[styles.title, { color: colors.text }]}>
-              Add Transaction
+              Edit Transaction
             </Text>
           </View>
 
@@ -176,7 +232,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
             style={[styles.divider, { backgroundColor: colors.settingDivider }]}
           />
 
-          {/* Toggle — riuso FinanceToggle esistente, solo expense/income */}
+          {/* Toggle */}
           <FinanceToggle
             value={type}
             onChange={handleTypeChange}
@@ -223,24 +279,12 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
             {loadingCategories ? (
               <ActivityIndicator />
             ) : (
-              <View
-                style={[
-                  styles.categoryRow,
-                  {
-                    borderColor: errors.category
-                      ? "#EF4444"
-                      : colors.settingDivider,
-                  },
-                ]}
-              >
-                <CategoryGrid
-                  categories={filteredCategories}
-                  selectedId={selectedCategoryId}
-                  onPress={handleCategorySelect}
-                  // niente onAdd — siamo nella modale, non nelle settings
-                  error={!!errors.category}
-                />
-              </View>
+              <CategoryGrid
+                categories={filteredCategories}
+                selectedId={selectedCategoryId}
+                onPress={handleCategorySelect}
+                error={!!errors.category}
+              />
             )}
             <ErrorText message={errors.category} />
           </View>
@@ -255,7 +299,6 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
                 accounts={accounts}
                 selectedId={selectedAccountId}
                 onPress={handleAccountSelect}
-                // niente onAdd — siamo nella modale
                 error={!!errors.account}
               />
             )}
@@ -291,29 +334,40 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
               ]}
               value={note}
               onChangeText={setNote}
-              placeholder="Lascia vuoto per usare il nome della categoria..."
+              placeholder="Nota sulla transazione..."
               placeholderTextColor={colors.text + "40"}
               multiline
               numberOfLines={3}
             />
           </View>
 
-          {/* Submit */}
+          {/* Salva */}
           <Pressable
             style={[
               styles.submitBtn,
               { backgroundColor: isExpense ? "#EF4444" : "#22C55E" },
               saving && { opacity: 0.55 },
             ]}
-            onPress={handleSubmit}
-            disabled={saving}
+            onPress={handleSave}
+            disabled={saving || deleting}
           >
             {saving ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.submitText}>
-                Add {isExpense ? "Expense" : "Income"} →
-              </Text>
+              <Text style={styles.submitText}>Save Changes →</Text>
+            )}
+          </Pressable>
+
+          {/* Delete */}
+          <Pressable
+            style={[styles.deleteBtn, deleting && { opacity: 0.55 }]}
+            onPress={handleDelete}
+            disabled={saving || deleting}
+          >
+            {deleting ? (
+              <ActivityIndicator color="#EF4444" />
+            ) : (
+              <Text style={styles.deleteText}>Delete Transaction</Text>
             )}
           </Pressable>
         </BottomSheetScrollView>
@@ -322,7 +376,7 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
   },
 );
 
-AddTransactionSheet.displayName = "AddTransactionSheet";
+EditTransactionSheet.displayName = "EditTransactionSheet";
 
 const styles = StyleSheet.create({
   content: {
@@ -350,18 +404,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 12,
     paddingHorizontal: 16,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  categoryRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
-    borderWidth: StyleSheet.hairlineWidth,
-  },
-  accountsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
   },
   currencySymbol: {
@@ -398,5 +440,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#fff",
     letterSpacing: 0.2,
+  },
+  deleteBtn: {
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  deleteText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#EF4444",
   },
 });

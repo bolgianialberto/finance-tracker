@@ -10,9 +10,9 @@ import { TransactionList } from "./transactions-list";
 type Props = {
   item: CategoryStats;
   isExpanded: boolean;
-  // FIX: le transactions arrivano già filtrate dal parent, non serve rifiltrarle
   transactions: Transaction[];
   onPressCategory?: (categoryId: string) => void;
+  onPressTransaction?: (transaction: Transaction) => void;
 };
 
 export function CategoryLegendItem({
@@ -20,6 +20,7 @@ export function CategoryLegendItem({
   isExpanded,
   transactions,
   onPressCategory,
+  onPressTransaction,
 }: Props) {
   const styles = useStyles();
 
@@ -56,8 +57,12 @@ export function CategoryLegendItem({
         />
       </Pressable>
 
-      {/* FIX: le transactions sono già filtrate, niente doppio .filter() */}
-      {isExpanded && <TransactionList transactions={transactions} />}
+      {isExpanded && (
+        <TransactionList
+          transactions={transactions}
+          onPressTransaction={onPressTransaction}
+        />
+      )}
     </View>
   );
 }
@@ -87,13 +92,10 @@ const createStyles = (colors: Colors, spacing: Spacing) =>
     iconWrapper: {
       alignItems: "center",
       justifyContent: "center",
-
       padding: spacing.sm,
       borderRadius: spacing.m,
       elevation: spacing.xxs,
       shadowRadius: spacing.xs,
-
-      // iOS
       shadowColor: "#000",
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.15,

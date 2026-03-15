@@ -24,7 +24,6 @@ function getMonthRange(): { firstDay: string; lastDay: string } {
   return { firstDay, lastDay };
 }
 
-// Schermata Transactions — solo mese corrente, filtrata per tipo
 export async function fetchTransactionsData(
   type: Exclude<FinanceType, "general">,
 ): Promise<{
@@ -40,7 +39,7 @@ export async function fetchTransactionsData(
     .from("transactions")
     .select(
       `
-      id, amount, type, note, date, category_id,
+      id, amount, type, note, date, category_id, account_id,
       category:categories ( id, name, icon, color, type ),
       account:accounts ( id, name )
     `,
@@ -66,7 +65,6 @@ export async function fetchTransactionsData(
   return { categoryStats, categoryAmounts, transactions, total };
 }
 
-// Schermata Charts — TUTTE le transazioni, nessun filtro mese
 export async function fetchAllTransactions(
   type: FinanceType,
 ): Promise<Transaction[]> {
@@ -76,7 +74,7 @@ export async function fetchAllTransactions(
     .from("transactions")
     .select(
       `
-      id, amount, type, note, date, category_id,
+      id, amount, type, note, date, category_id, account_id,
       account:accounts ( id, name )
     `,
     )
@@ -93,19 +91,16 @@ export async function fetchAllTransactions(
   return data ? mapToTransactions(data) : [];
 }
 
-// Inserisce una nuova transazione
 export async function insertTransaction(params: {
   amount: number;
   type: Exclude<FinanceType, "general">;
   categoryId: string;
-  categoryName: string; // usato come nota di default se note è vuota
+  categoryName: string;
   accountId: string;
-  date: string; // formato YYYY-MM-DD
+  date: string;
   note?: string;
 }): Promise<void> {
   const userId = await getUserId();
-
-  // Se la nota è vuota usa il nome della categoria come titolo generico
   const finalNote = params.note?.trim() || params.categoryName;
 
   const { error } = await supabase.from("transactions").insert({
@@ -121,12 +116,43 @@ export async function insertTransaction(params: {
   if (error) throw error;
 }
 
-// --- Helpers condivisi ---
+export async function updateTransaction(params: {
+  id: string;
+  amount: number;
+  type: Exclude<FinanceType, "general">;
+  categoryId: string;
+  accountId: string;
+  date: string;
+  note?: string;
+}): Promise<void> {
+  const { error } = await supabase
+    .from("transactions")
+    .update({
+      amount: params.amount,
+      type: params.type,
+      category_id: params.categoryId,
+      account_id: params.accountId,
+      date: params.date,
+      note: params.note?.trim() || undefined,
+    })
+    .eq("id", params.id);
+
+  if (error) throw error;
+}
+
+export async function deleteTransaction(id: string): Promise<void> {
+  const { error } = await supabase.from("transactions").delete().eq("id", id);
+
+  if (error) throw error;
+}
+
+// --- Helpers ---
 
 function mapToTransactions(data: any[]): Transaction[] {
   return data.map((row) => ({
     id: row.id,
     categoryId: row.category_id,
+    accountId: row.account_id,
     amount: row.amount,
     note: row.note ?? undefined,
     accountName: row.account?.name ?? "—",
@@ -152,8 +178,10 @@ function groupByCategory(data: any[]): {
           id: cat.id,
           name: cat.name,
           icon: resolveIcon(cat.icon),
+          iconKey: cat.icon,
           color: cat.color,
           type: cat.type,
+          isGlobal: false,
         },
         amount: 0,
         transactionCount: 0,

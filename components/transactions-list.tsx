@@ -1,21 +1,25 @@
 import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { Transaction } from "@/models/transaction";
 import { StyleSheet, View } from "react-native";
-import { Transaction } from "../models/transaction";
 import { TransactionListItem } from "./transactions-list-item";
 
 type Props = {
   transactions: Transaction[];
+  onPressTransaction?: (transaction: Transaction) => void;
 };
 
-export function TransactionList({ transactions }: Props) {
+export function TransactionList({ transactions, onPressTransaction }: Props) {
   const styles = useStyles();
 
   return (
     <View style={styles.container}>
       {transactions.map((tx, index) => (
         <View key={tx.id}>
-          <TransactionListItem transaction={tx} />
+          <TransactionListItem
+            transaction={tx}
+            onPress={() => onPressTransaction?.(tx)}
+          />
           {index < transactions.length - 1 && <View style={styles.divider} />}
         </View>
       ))}

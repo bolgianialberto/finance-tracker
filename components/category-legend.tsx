@@ -9,6 +9,7 @@ type Props = {
   expandedCategoryIds: string[];
   transactions: Transaction[];
   onPressCategory?: (categoryId: string) => void;
+  onPressTransaction?: (transaction: Transaction) => void;
 };
 
 export function CategoryLegend({
@@ -16,6 +17,7 @@ export function CategoryLegend({
   expandedCategoryIds,
   transactions,
   onPressCategory,
+  onPressTransaction,
 }: Props) {
   const styles = useStyles();
 
@@ -23,7 +25,6 @@ export function CategoryLegend({
     <View style={styles.content}>
       {data.map((item, index) => {
         const isExpanded = expandedCategoryIds.includes(item.category.id);
-        // FIX: filtro centralizzato qui, non ripetuto nel child
         const categoryTransactions = transactions.filter(
           (tx) => tx.categoryId === item.category.id,
         );
@@ -34,6 +35,7 @@ export function CategoryLegend({
               isExpanded={isExpanded}
               transactions={categoryTransactions}
               onPressCategory={onPressCategory}
+              onPressTransaction={onPressTransaction}
             />
             {index < data.length - 1 && <View style={styles.divider} />}
           </View>
@@ -50,8 +52,8 @@ const useStyles = () => {
       paddingVertical: 4,
     },
     divider: {
-      height: StyleSheet.hairlineWidth, // più moderno e pixel-perfect
-      backgroundColor: colors.categoryLegendDivider, // FIX: era hardcoded "#ccccccff"
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: colors.categoryLegendDivider,
       marginHorizontal: 8,
     },
   });

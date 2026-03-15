@@ -1,20 +1,23 @@
 import { ThemedText } from "@/components/ui/themed-text";
 import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
-import { StyleSheet, View } from "react-native";
-import { Transaction } from "../models/transaction";
+import { Transaction } from "@/models/transaction";
+import { Pressable, StyleSheet, View } from "react-native";
 
 type Props = {
   transaction: Transaction;
+  onPress?: () => void;
 };
 
-export function TransactionListItem({ transaction }: Props) {
+export function TransactionListItem({ transaction, onPress }: Props) {
   const styles = useStyles();
-
   const isNegative = transaction.type === "expense";
 
   return (
-    <View style={styles.row}>
+    <Pressable
+      style={({ pressed }) => [styles.row, pressed && { opacity: 0.6 }]}
+      onPress={onPress}
+    >
       <View style={styles.center}>
         <ThemedText type="captionBold" style={styles.note}>
           {transaction.note || "Nessuna descrizione"}
@@ -28,7 +31,7 @@ export function TransactionListItem({ transaction }: Props) {
       >
         {isNegative ? "-" : "+"} € {Math.abs(transaction.amount).toFixed(2)}
       </ThemedText>
-    </View>
+    </Pressable>
   );
 }
 
