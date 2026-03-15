@@ -26,16 +26,19 @@ export function CategoryGrid({
       <View style={styles.grid}>
         {categories.map((item) => {
           const isSelected = selectedId === item.id;
+          // Le categorie globali non sono cliccabili in modalità navigazione (settings)
+          // ma rimangono selezionabili in modalità selezione (modale addTransaction)
+          const isSelectable = !item.isGlobal || selectedId !== undefined;
 
           return (
             <Pressable
               key={item.id}
               style={({ pressed }) => [
                 styles.item,
-                pressed && { opacity: 0.7 },
+                pressed && isSelectable && { opacity: 0.7 },
                 isSelected && { backgroundColor: item.color + "18" },
               ]}
-              onPress={() => onPress?.(item)}
+              onPress={() => isSelectable && onPress?.(item)}
             >
               <View
                 style={[

@@ -16,6 +16,7 @@ export type IconSymbolName = keyof typeof MAPPING;
  * Ref: https://icons.expo.fyi  |  https://developer.apple.com/sf-symbols/
  */
 const MAPPING = {
+  // UI generica
   "paperplane.fill": "send",
   "chevron.left.forwardslash.chevron.right": "code",
   "chevron.right": "chevron-right",
@@ -28,14 +29,14 @@ const MAPPING = {
   dollarsign: "attach-money",
   "arrow.up.forward": "trending-up",
   "arrow.down.forward": "trending-down",
-  // Aggiunge icone utili di base
   "plus.circle.fill": "add-circle",
   "minus.circle.fill": "remove-circle",
   "xmark.circle.fill": "cancel",
   "checkmark.circle.fill": "check-circle",
+  checkmark: "check",
   plus: "add",
 
-  // Categorie
+  // Categorie esistenti
   "house.fill": "home",
   "fork.knife": "restaurant",
   "car.fill": "directions-car",
@@ -51,6 +52,28 @@ const MAPPING = {
   "chart.line.uptrend.xyaxis": "trending-up",
   "gift.fill": "card-giftcard",
   "tag.fill": "label",
+
+  // Categorie nuove
+  "figure.run": "directions-run",
+  "music.note": "music-note",
+  "cup.and.saucer.fill": "coffee-maker",
+  "pawprint.fill": "pets",
+  "phone.fill": "phone",
+  "camera.fill": "camera-alt",
+  "book.fill": "menu-book",
+  "star.fill": "star",
+  "flag.fill": "flag",
+  "map.fill": "map",
+  "building.columns.fill": "account-balance",
+  "banknote.fill": "payments",
+  "wallet.pass.fill": "account-balance-wallet",
+  "pills.fill": "medication",
+  "leaf.fill": "eco",
+  "sun.max.fill": "wb-sunny",
+  "moon.fill": "nightlight-round",
+  "cloud.fill": "cloud",
+  "flame.fill": "local-fire-department",
+  "drop.fill": "water-drop",
 } as IconMapping;
 
 type Props = {
@@ -58,7 +81,7 @@ type Props = {
   size?: number;
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
-  weight?: SymbolWeight; // ignorato su Android/web, mantenuto per compatibilità iOS
+  weight?: SymbolWeight;
 };
 
 /**

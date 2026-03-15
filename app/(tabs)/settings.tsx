@@ -1,3 +1,7 @@
+import { AddAccountSheet } from "@/components/addAccountSheet";
+import { AddCategorySheet } from "@/components/addCategorySheet";
+import { EditAccountSheet } from "@/components/edit-account-sheet";
+import { EditCategorySheet } from "@/components/edit-category-sheet";
 import { SettingsAccounts } from "@/components/settings-accounts";
 import { SettingsCategories } from "@/components/settings-categories";
 import { SettingsPreferences } from "@/components/settings-preferences";
@@ -7,7 +11,11 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useAccountsData } from "@/hooks/use-account-data";
 import { useCategoriesData } from "@/hooks/use-category-data";
 import { useTheme } from "@/hooks/use-theme";
+import { Account } from "@/models/account";
+import { Category } from "@/models/category";
 import { supabase } from "@/src/lib/supabase";
+import BottomSheet from "@gorhom/bottom-sheet";
+import { useRef, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -18,8 +26,24 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
-  const { accounts, loadingAccounts } = useAccountsData();
-  const { categories, loadingCategories } = useCategoriesData();
+  const {
+    accounts,
+    loadingAccounts,
+    refetch: refetchAccounts,
+  } = useAccountsData();
+  const {
+    categories,
+    loadingCategories,
+    refetch: refetchCategories,
+  } = useCategoriesData();
+  const addAccountRef = useRef<BottomSheet>(null);
+  const addCategoryRef = useRef<BottomSheet>(null);
+  const editAccountRef = useRef<BottomSheet>(null);
+  const editCategoryRef = useRef<BottomSheet>(null);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null,
+  );
   const styles = useStyles();
 
   async function handleSignOut() {
@@ -53,11 +77,10 @@ export default function SettingsScreen() {
           <SettingsAccounts
             accounts={accounts}
             loading={loadingAccounts}
-            onAddAccount={() => {
-              /* apri modale add */
-            }}
+            onAddAccount={() => addAccountRef.current?.expand()}
             onPressAccount={(acc) => {
-              /* apri modale edit */
+              setSelectedAccount(acc);
+              editAccountRef.current?.expand();
             }}
           />
 
@@ -66,8 +89,11 @@ export default function SettingsScreen() {
           <SettingsCategories
             categories={categories}
             loading={loadingCategories}
-            onAddCategory={() => console.log("apri modale add category")}
-            onPressCategory={(cat) => console.log("modifica categoria", cat.id)}
+            onAddCategory={() => addCategoryRef.current?.expand()}
+            onPressCategory={(cat) => {
+              setSelectedCategory(cat);
+              editCategoryRef.current?.expand();
+            }}
           />
 
           <View style={styles.sectionDivider} />
@@ -85,6 +111,24 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </ScrollView>
       </View>
+
+      <AddAccountSheet
+        ref={addAccountRef}
+        onSuccess={() => refetchAccounts()} // chiama il refetch del tuo hook
+      />
+
+      <AddCategorySheet ref={addCategoryRef} onSuccess={refetchCategories} />
+
+      <EditAccountSheet
+        ref={editAccountRef}
+        account={selectedAccount}
+        onSuccess={refetchAccounts}
+      />
+      <EditCategorySheet
+        ref={editCategoryRef}
+        category={selectedCategory}
+        onSuccess={refetchCategories}
+      />
     </SafeAreaView>
   );
 }

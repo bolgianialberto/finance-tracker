@@ -39,9 +39,7 @@ export function SettingsAccounts({
             >
               <View
                 style={[styles.iconWrapper, { backgroundColor: item.color }]}
-              >
-                <IconSymbol name={item.icon} size={16} color="#fff" />
-              </View>
+              ></View>
               <View style={styles.vertical}>
                 <ThemedText>{item.name}</ThemedText>
               </View>
