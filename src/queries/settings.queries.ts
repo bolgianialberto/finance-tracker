@@ -1,6 +1,7 @@
 import { resolveIcon } from "@/constants/icon-map";
 import { Account } from "@/models/account";
 import { Category, CategoryType } from "@/models/category";
+import { emitRefresh } from "@/src/lib/refresh-events";
 import { supabase } from "@/src/lib/supabase";
 
 async function getUserId(): Promise<string> {
@@ -15,7 +16,6 @@ async function getUserId(): Promise<string> {
 
 export async function fetchAccounts(): Promise<Account[]> {
   const userId = await getUserId();
-
   const { data, error } = await supabase
     .from("accounts")
     .select("id, name, balance, color")
@@ -55,6 +55,7 @@ export async function insertAccount({
     is_archived: false,
   });
   if (error) throw error;
+  emitRefresh("accounts");
 }
 
 export async function updateAccount({
@@ -71,6 +72,7 @@ export async function updateAccount({
     .update({ name: name.trim(), color })
     .eq("id", id);
   if (error) throw error;
+  emitRefresh("accounts");
 }
 
 export async function deleteAccount(id: string): Promise<void> {
@@ -79,13 +81,13 @@ export async function deleteAccount(id: string): Promise<void> {
     .update({ is_archived: true })
     .eq("id", id);
   if (error) throw error;
+  emitRefresh("accounts");
 }
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export async function fetchCategories(): Promise<Category[]> {
   const userId = await getUserId();
-
   const { data, error } = await supabase
     .from("categories")
     .select("id, name, icon, color, type, user_id, created_at")
@@ -129,6 +131,7 @@ export async function insertCategory({
     is_archived: false,
   });
   if (error) throw error;
+  emitRefresh("categories");
 }
 
 export async function updateCategory({
@@ -149,6 +152,7 @@ export async function updateCategory({
     .update({ name: name.trim(), icon: iconKey, color, type })
     .eq("id", id);
   if (error) throw error;
+  emitRefresh("categories");
 }
 
 export async function deleteCategory(id: string): Promise<void> {
@@ -157,4 +161,5 @@ export async function deleteCategory(id: string): Promise<void> {
     .update({ is_archived: true })
     .eq("id", id);
   if (error) throw error;
+  emitRefresh("categories");
 }

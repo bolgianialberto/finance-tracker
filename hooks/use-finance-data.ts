@@ -2,50 +2,48 @@ import { CategoryAmount } from "@/models/category-amount";
 import { CategoryStats } from "@/models/category-stats";
 import { FinanceType } from "@/models/finance-type";
 import { Transaction } from "@/models/transaction";
+import { useRefreshOn } from "@/src/lib/refresh-events";
 import { fetchTransactionsData } from "@/src/queries/transactions.queries";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-interface UseFinanceDataReturn {
-  data: CategoryStats[]; // per CategoryLegend
-  amounts: CategoryAmount[]; // per FinanceDonutChart
-  transactions: Transaction[]; // per la lista dentro ogni categoria
-  total: number; // per il centro del donut
+type FinanceData = {
+  data: CategoryStats[];
+  amounts: CategoryAmount[];
+  transactions: Transaction[];
+  total: number;
   loading: boolean;
-  error: string | null;
   refetch: () => void;
-}
+};
 
-export function useFinanceData(type: FinanceType): UseFinanceDataReturn {
+export function useFinanceData(
+  type: Exclude<FinanceType, "general">,
+): FinanceData {
   const [data, setData] = useState<CategoryStats[]>([]);
   const [amounts, setAmounts] = useState<CategoryAmount[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  async function load() {
-    // "general" non è supportato in questa schermata
-    if (type === "general") return;
-
+  const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
       const result = await fetchTransactionsData(type);
       setData(result.categoryStats);
       setAmounts(result.categoryAmounts);
       setTransactions(result.transactions);
       setTotal(result.total);
-    } catch (e: any) {
-      setError(e.message ?? "Errore sconosciuto");
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
-  }
-
-  // Si ricarica ogni volta che cambia il tipo (income ↔ expense)
-  useEffect(() => {
-    load();
   }, [type]);
 
-  return { data, amounts, transactions, total, loading, error, refetch: load };
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useRefreshOn(["transactions"], load);
+
+  return { data, amounts, transactions, total, loading, refetch: load };
 }

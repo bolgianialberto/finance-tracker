@@ -1,13 +1,14 @@
 import { Category } from "@/models/category";
+import { useRefreshOn } from "@/src/lib/refresh-events";
 import { fetchCategories } from "@/src/queries/settings.queries";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useCategoriesData() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoadingCategories(true);
     setError(null);
     try {
@@ -18,11 +19,13 @@ export function useCategoriesData() {
     } finally {
       setLoadingCategories(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  useRefreshOn(["categories"], load);
 
   return { categories, loadingCategories, error, refetch: load };
 }

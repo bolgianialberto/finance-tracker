@@ -3,6 +3,7 @@ import { CategoryAmount } from "@/models/category-amount";
 import { CategoryStats } from "@/models/category-stats";
 import { FinanceType } from "@/models/finance-type";
 import { Transaction } from "@/models/transaction";
+import { emitRefresh } from "@/src/lib/refresh-events";
 import { supabase } from "@/src/lib/supabase";
 
 async function getUserId(): Promise<string> {
@@ -82,9 +83,7 @@ export async function fetchAllTransactions(
     .is("transfer_id", null)
     .order("date", { ascending: true });
 
-  if (type !== "general") {
-    query = query.eq("type", type);
-  }
+  if (type !== "general") query = query.eq("type", type);
 
   const { data, error } = await query;
   if (error) throw error;
@@ -114,6 +113,7 @@ export async function insertTransaction(params: {
   });
 
   if (error) throw error;
+  emitRefresh("transactions", "accounts"); // aggiorna balance account
 }
 
 export async function updateTransaction(params: {
@@ -138,12 +138,13 @@ export async function updateTransaction(params: {
     .eq("id", params.id);
 
   if (error) throw error;
+  emitRefresh("transactions", "accounts");
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
   const { error } = await supabase.from("transactions").delete().eq("id", id);
-
   if (error) throw error;
+  emitRefresh("transactions", "accounts");
 }
 
 // --- Helpers ---
@@ -196,12 +197,10 @@ function groupByCategory(data: any[]): {
   const categoryStats = Array.from(statsMap.values()).sort(
     (a, b) => b.amount - a.amount,
   );
-
   const categoryAmounts = categoryStats.map((s) => ({
     category: s.category,
     amount: s.amount,
   }));
-
   const total = categoryStats.reduce((sum, s) => sum + s.amount, 0);
   return { categoryStats, categoryAmounts, total };
 }

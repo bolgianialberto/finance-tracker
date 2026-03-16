@@ -1,55 +1,47 @@
-import { supabase } from "@/src/lib/supabase";
+import { useRefreshOn } from "@/src/lib/refresh-events";
 import {
-    fetchMonthlyStats,
-    fetchTotalBalance,
+  fetchMonthlyStats,
+  fetchTotalBalance,
 } from "@/src/queries/home.queries";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-interface HomeData {
+type HomeData = {
   totalBalance: number;
   income: number;
   expenses: number;
   netSavings: number;
-}
+};
 
-interface UseHomeDataReturn {
-  data: HomeData | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
-
-export function useHomeData(): UseHomeDataReturn {
+export function useHomeData() {
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      console.log("USER:", user?.id); // <- aggiungi questo
-
-      const [totalBalance, { income, expenses, netSavings }] =
-        await Promise.all([fetchTotalBalance(), fetchMonthlyStats()]);
-
-      console.log("DATA:", { totalBalance, income, expenses, netSavings }); // <- e questo
-
-      setData({ totalBalance, income, expenses, netSavings });
-    } catch (e: any) {
-      console.log("ERRORE:", e.message); // <- e questo
-      setError(e.message ?? "Errore sconosciuto");
+      const [totalBalance, { income, expenses }] = await Promise.all([
+        fetchTotalBalance(),
+        fetchMonthlyStats(),
+      ]);
+      setData({
+        totalBalance,
+        income,
+        expenses,
+        netSavings: income - expenses,
+      });
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
 
-  return { data, loading, error, refetch: load };
+  // Si ricarica quando cambiano transazioni o account
+  useRefreshOn(["transactions", "accounts"], load);
+
+  return { data, loading, refetch: load };
 }

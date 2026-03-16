@@ -1,13 +1,14 @@
 import { Account } from "@/models/account";
+import { useRefreshOn } from "@/src/lib/refresh-events";
 import { fetchAccounts } from "@/src/queries/settings.queries";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useAccountsData() {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoadingAccounts(true);
     setError(null);
     try {
@@ -18,11 +19,13 @@ export function useAccountsData() {
     } finally {
       setLoadingAccounts(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  useRefreshOn(["accounts"], load);
 
   return { accounts, loadingAccounts, error, refetch: load };
 }
