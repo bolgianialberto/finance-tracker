@@ -83,7 +83,12 @@ export default function TransactionsScreen() {
                 { backgroundColor: colors.addTransactionButton },
                 pressed && styles.fabPressed,
               ]}
-              onPress={() => addSheetRef.current?.expand()}
+              onPress={() => {
+                unstable_batchedUpdates(() => {
+                  // non c'è nulla da settare qui, initialType è già aggiornato
+                });
+                addSheetRef.current?.expand();
+              }}
             >
               <IconSymbol name="plus" size={20} color="#fff" />
             </Pressable>

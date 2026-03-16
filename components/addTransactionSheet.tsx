@@ -10,7 +10,7 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -137,6 +137,10 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
 
     const isExpense = type === "expense";
 
+    useEffect(() => {
+      setType(initialType);
+    }, [initialType]);
+
     return (
       <BottomSheet
         ref={ref}
@@ -152,7 +156,6 @@ export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
         }}
         onChange={(index) => {
           if (index >= 0) {
-            // La modale si sta aprendo — resetta al tipo corrente
             setType(initialType);
           }
         }}
