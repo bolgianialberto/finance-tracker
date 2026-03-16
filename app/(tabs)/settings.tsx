@@ -1,5 +1,5 @@
-import { AddAccountSheet } from "@/components/addAccountSheet";
-import { AddCategorySheet } from "@/components/addCategorySheet";
+import { AddAccountSheet } from "@/components/add-account-sheet";
+import { AddCategorySheet } from "@/components/add-category-sheet";
 import { EditAccountSheet } from "@/components/edit-account-sheet";
 import { EditCategorySheet } from "@/components/edit-category-sheet";
 import { SettingsAccounts } from "@/components/settings-accounts";

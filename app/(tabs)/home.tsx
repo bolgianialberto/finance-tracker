@@ -1,4 +1,4 @@
-import { AddTransactionSheet } from "@/components/addTransactionSheet";
+import { AddTransactionSheet } from "@/components/add-transaction-sheet";
 import { InfoCard } from "@/components/card/InfoCard";
 import { StatsCard } from "@/components/card/StatsCard";
 import { IconSymbol } from "@/components/ui/icon-symbol";

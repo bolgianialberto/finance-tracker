@@ -7,18 +7,18 @@ import { CategoryType } from "@/models/category";
 import { FinanceType } from "@/models/finance-type";
 import { insertCategory } from "@/src/queries/settings.queries";
 import BottomSheet, {
-    BottomSheetBackdrop,
-    BottomSheetScrollView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { ColorPicker } from "./color-picker";
@@ -118,7 +118,7 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
         <BottomSheetScrollView
           contentContainerStyle={[
             styles.content,
-            { paddingBottom: insets.bottom + spacing.md },
+            { paddingBottom: insets.bottom },
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}

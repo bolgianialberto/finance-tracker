@@ -1,4 +1,4 @@
-import { AddTransactionSheet } from "@/components/addTransactionSheet";
+import { AddTransactionSheet } from "@/components/add-transaction-sheet";
 import { CategoryLegend } from "@/components/category-legend";
 import { EditTransactionSheet } from "@/components/edit-transaction-sheet";
 import { FinanceDonutChart } from "@/components/finance-donut-chart";
