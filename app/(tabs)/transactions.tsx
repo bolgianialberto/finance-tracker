@@ -13,7 +13,13 @@ import { FinanceType } from "@/models/finance-type";
 import { Transaction } from "@/models/transaction";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { useRef, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  unstable_batchedUpdates,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
@@ -38,7 +44,9 @@ export default function TransactionsScreen() {
   }
 
   function handlePressTransaction(tx: Transaction) {
-    setSelectedTransaction(tx);
+    unstable_batchedUpdates(() => {
+      setSelectedTransaction(tx);
+    });
     editSheetRef.current?.expand();
   }
 

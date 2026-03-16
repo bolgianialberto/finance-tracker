@@ -12,29 +12,29 @@ import { Category } from "@/models/category";
 import { FinanceType } from "@/models/finance-type";
 import { Transaction } from "@/models/transaction";
 import {
-    deleteTransaction,
-    updateTransaction,
+  deleteTransaction,
+  updateTransaction,
 } from "@/src/queries/transactions.queries";
 import BottomSheet, {
-    BottomSheetBackdrop,
-    BottomSheetScrollView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import {
-    forwardRef,
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
 } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -52,15 +52,8 @@ export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
     const { accounts, loadingAccounts } = useAccountsData();
     const { categories, loadingCategories } = useCategoriesData();
 
-    const [type, setType] = useState<Exclude<FinanceType, "general">>(
-      () =>
-        (transaction?.type === "general"
-          ? "expense"
-          : (transaction?.type ?? "expense")) as Exclude<
-          FinanceType,
-          "general"
-        >,
-    );
+    const [type, setType] =
+      useState<Exclude<FinanceType, "general">>("expense");
     const [amount, setAmount] = useState("");
     const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
       null,
@@ -72,6 +65,7 @@ export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
       () => new Date().toISOString().split("T")[0],
     );
     const [note, setNote] = useState("");
+
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -85,6 +79,21 @@ export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
       () => categories.filter((c) => c.type === type || c.type === "general"),
       [categories, type],
     );
+
+    useEffect(() => {
+      if (!transaction) return;
+      setType(
+        transaction.type === "general"
+          ? "expense"
+          : (transaction.type as Exclude<FinanceType, "general">),
+      );
+      setAmount(transaction.amount.toString());
+      setSelectedCategoryId(transaction.categoryId);
+      setSelectedAccountId(transaction.accountId);
+      setDate(transaction.date);
+      setNote(transaction.note ?? "");
+      setErrors({});
+    }, [transaction?.id]);
 
     function handleTypeChange(newType: FinanceType) {
       if (newType === "general") return;
@@ -195,22 +204,6 @@ export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
         handleIndicatorStyle={{
           backgroundColor: colors.settingDivider,
           width: 40,
-        }}
-        onChange={(index) => {
-          const tx = transactionRef.current;
-          if (index >= 0 && tx) {
-            setType(
-              tx.type === "general"
-                ? "expense"
-                : (tx.type as Exclude<FinanceType, "general">),
-            );
-            setAmount(tx.amount.toString());
-            setSelectedCategoryId(tx.categoryId);
-            setSelectedAccountId(tx.accountId);
-            setDate(tx.date);
-            setNote(tx.note ?? "");
-            setErrors({});
-          }
         }}
       >
         <BottomSheetScrollView
