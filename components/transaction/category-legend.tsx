@@ -1,7 +1,7 @@
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
-import { CategoryStats } from "../models/category-stats";
-import { Transaction } from "../models/transaction";
+import { CategoryStats } from "../../models/category-stats";
+import { Transaction } from "../../models/transaction";
 import { CategoryLegendItem } from "./category-legend-item";
 
 type Props = {

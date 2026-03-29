@@ -1,8 +1,8 @@
-import { AddTransactionSheet } from "@/components/add-transaction-sheet";
-import { CategoryLegend } from "@/components/category-legend";
-import { EditTransactionSheet } from "@/components/edit-transaction-sheet";
-import { FinanceDonutChart } from "@/components/finance-donut-chart";
+import { FinanceDonutChart } from "@/components/chart/finance-donut-chart";
 import { FinanceToggle } from "@/components/finance-toggle";
+import { AddTransactionSheet } from "@/components/transaction/add-transaction-sheet";
+import { CategoryLegend } from "@/components/transaction/category-legend";
+import { EditTransactionSheet } from "@/components/transaction/edit-transaction-sheet";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";
@@ -23,7 +23,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function TransactionsScreen() {
-  const [type, setType] = useState<FinanceType>("expense");
+  const [type, setType] = useState<Exclude<FinanceType, "general">>("expense");
   const { data, amounts, total, transactions, refetch } = useFinanceData(type);
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<string[]>([]);
 
@@ -65,7 +65,10 @@ export default function TransactionsScreen() {
         <View style={styles.content}>
           <FinanceToggle
             value={type}
-            onChange={setType}
+            onChange={(t) => {
+              if (t === "general") return;
+              setType(t);
+            }}
             getGeneral={false}
             getIncome={true}
             getExpenses={true}
@@ -116,7 +119,7 @@ export default function TransactionsScreen() {
       <AddTransactionSheet
         ref={addSheetRef}
         onSuccess={handleSuccess}
-        initialType={type === "general" ? "expense" : type}
+        initialType={type}
       />
       <EditTransactionSheet
         ref={editSheetRef}

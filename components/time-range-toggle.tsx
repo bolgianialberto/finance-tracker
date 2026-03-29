@@ -1,8 +1,8 @@
 import { TimeToggleButton } from "@/components/time-toggle-button";
+import type { ToggleVariant } from "@/constants/styles/toggle.styles";
 import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { TimeRange } from "@/models/time-range";
-import type { ToggleVariant } from "@/variant/toggle.styles";
 import { StyleSheet, View } from "react-native";
 
 type Props = {

@@ -1,5 +1,5 @@
 import { ChartCard } from "@/components/card/ChartCard";
-import { FinanceBarChart } from "@/components/finance-bar-chart";
+import { FinanceBarChart } from "@/components/chart/finance-bar-chart";
 import { FinanceToggle } from "@/components/finance-toggle";
 import { TimeRangeToggle } from "@/components/time-range-toggle";
 import { MonthLabel } from "@/components/ui/month-label";

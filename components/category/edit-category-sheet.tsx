@@ -3,14 +3,14 @@ import { ErrorText } from "@/components/ui/error-text";
 import { SectionLabel } from "@/components/ui/section-label";
 import { AVAILABLE_ICONS } from "@/constants/icon-map";
 import { useTheme } from "@/hooks/use-theme";
-import { CategoryType } from "@/models/category";
+import { Category, CategoryType } from "@/models/category";
 import { FinanceType } from "@/models/finance-type";
-import { insertCategory } from "@/src/queries/settings.queries";
+import { deleteCategory, updateCategory } from "@/src/queries/settings.queries";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
-import { forwardRef, useCallback, useMemo, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -21,37 +21,41 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ColorPicker } from "./color-picker";
-import { IconPicker } from "./icon-picker";
-import { IconSymbol } from "./ui/icon-symbol";
+import { ColorPicker } from "../ui/color-picker";
+import { IconPicker } from "../ui/icon-picker";
+import { IconSymbol } from "../ui/icon-symbol";
 
 type Props = {
+  category: Category | null;
   onSuccess?: () => void;
 };
 
-const DEFAULT_COLOR = "#3B82F6";
-
-export const AddCategorySheet = forwardRef<BottomSheet, Props>(
-  ({ onSuccess }, ref) => {
+export const EditCategorySheet = forwardRef<BottomSheet, Props>(
+  ({ category, onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
     const { colors, spacing } = useTheme();
     const snapPoints = useMemo(() => ["90%"], []);
 
     const [name, setName] = useState("");
-    const [iconKey, setIconKey] = useState(""); // vuoto = nessuna icona selezionata
-    const [color, setColor] = useState(DEFAULT_COLOR);
+    const [iconKey, setIconKey] = useState("");
+    const [color, setColor] = useState("#3B82F6");
     const [type, setType] =
       useState<Exclude<FinanceType, "general">>("expense");
     const [saving, setSaving] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    function reset() {
-      setName("");
-      setIconKey("");
-      setColor(DEFAULT_COLOR);
-      setType("expense");
-      setErrors({});
-    }
+    useEffect(() => {
+      if (category) {
+        setName(category.name);
+        setIconKey(category.iconKey);
+        setColor(category.color);
+        setType(category.type === "general" ? "expense" : category.type);
+        setErrors({});
+      }
+    }, [category]);
+
+    const isGlobal = category?.isGlobal ?? false;
 
     function handleTypeChange(newType: FinanceType) {
       if (newType === "general") return;
@@ -66,24 +70,57 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
       return Object.keys(newErrors).length === 0;
     }
 
-    async function handleSubmit() {
-      if (!validate()) return;
+    async function handleSave() {
+      if (!category || !validate()) return;
       setSaving(true);
       try {
-        await insertCategory({
+        await updateCategory({
+          id: category.id,
           name,
           iconKey,
           color,
           type: type as CategoryType,
         });
-        reset();
         (ref as any)?.current?.close();
         onSuccess?.();
       } catch (e: any) {
-        Alert.alert("Errore", e.message ?? "Impossibile salvare la categoria");
+        Alert.alert(
+          "Errore",
+          e.message ?? "Impossibile aggiornare la categoria",
+        );
       } finally {
         setSaving(false);
       }
+    }
+
+    function handleDelete() {
+      if (!category) return;
+      Alert.alert(
+        "Elimina categoria",
+        `Sei sicuro di voler eliminare "${category.name}"? Le transazioni associate rimarranno ma la categoria non sarà più visibile.`,
+        [
+          { text: "Annulla", style: "cancel" },
+          {
+            text: "Elimina",
+            style: "destructive",
+            onPress: async () => {
+              setDeleting(true);
+              try {
+                await deleteCategory(category.id);
+                (ref as any)?.current?.close();
+                onSuccess?.();
+              } catch (e: any) {
+                Alert.alert(
+                  "Errore",
+                  e.message ?? "Impossibile eliminare la categoria",
+                );
+              } finally {
+                setDeleting(false);
+              }
+            },
+          },
+        ],
+      );
     }
 
     const renderBackdrop = useCallback(
@@ -118,7 +155,7 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
         <BottomSheetScrollView
           contentContainerStyle={[
             styles.content,
-            { paddingBottom: insets.bottom },
+            { paddingBottom: insets.bottom + spacing.md },
           ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -126,7 +163,7 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
           {/* Header */}
           <View style={styles.headerRow}>
             <Text style={[styles.title, { color: colors.text }]}>
-              Add Category
+              {isGlobal ? "Category Info" : "Edit Category"}
             </Text>
           </View>
 
@@ -134,7 +171,26 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
             style={[styles.divider, { backgroundColor: colors.settingDivider }]}
           />
 
-          {/* Anteprima live */}
+          {/* Banner categoria globale */}
+          {isGlobal && (
+            <View
+              style={[
+                styles.globalBanner,
+                { backgroundColor: colors.settingDivider },
+              ]}
+            >
+              <IconSymbol
+                name="lock.fill"
+                size={14}
+                color={colors.text + "80"}
+              />
+              <Text style={[styles.globalText, { color: colors.text + "80" }]}>
+                Questa è una categoria predefinita e non può essere modificata
+              </Text>
+            </View>
+          )}
+
+          {/* Anteprima */}
           <View style={styles.previewRow}>
             <View
               style={[
@@ -177,13 +233,16 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
                   color: colors.text,
                   backgroundColor: colors.background,
                   borderColor: errors.name ? "#EF4444" : colors.settingDivider,
+                  opacity: isGlobal ? 0.5 : 1,
                 },
               ]}
               value={name}
               onChangeText={(v) => {
+                if (isGlobal) return;
                 setName(v);
                 setErrors((e) => ({ ...e, name: "" }));
               }}
+              editable={!isGlobal}
               placeholder="Es. Palestra, Abbonamento..."
               placeholderTextColor={colors.text + "40"}
               maxLength={30}
@@ -192,12 +251,13 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
           </View>
 
           {/* Icona */}
-          <View style={styles.field}>
+          <View style={[styles.field, isGlobal && { opacity: 0.5 }]}>
             <SectionLabel label="Icon *" />
             <IconPicker
               selectedKey={iconKey}
               selectedColor={color}
               onChange={(key) => {
+                if (isGlobal) return;
                 setIconKey(key);
                 setErrors((e) => ({ ...e, icon: "" }));
               }}
@@ -207,34 +267,56 @@ export const AddCategorySheet = forwardRef<BottomSheet, Props>(
           </View>
 
           {/* Colore */}
-          <View style={styles.field}>
+          <View style={[styles.field, isGlobal && { opacity: 0.5 }]}>
             <SectionLabel label="Color" />
-            <ColorPicker value={color} onChange={setColor} />
+            <ColorPicker
+              value={color}
+              onChange={(c) => {
+                if (isGlobal) return;
+                setColor(c);
+              }}
+            />
           </View>
 
-          {/* Submit */}
-          <Pressable
-            style={[
-              styles.submitBtn,
-              { backgroundColor: color },
-              saving && { opacity: 0.55 },
-            ]}
-            onPress={handleSubmit}
-            disabled={saving}
-          >
-            {saving ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.submitText}>Add Category →</Text>
-            )}
-          </Pressable>
+          {/* Salva e Delete — nascosti per categorie globali */}
+          {!isGlobal && (
+            <>
+              <Pressable
+                style={[
+                  styles.submitBtn,
+                  { backgroundColor: color },
+                  saving && { opacity: 0.55 },
+                ]}
+                onPress={handleSave}
+                disabled={saving || deleting}
+              >
+                {saving ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.submitText}>Save Changes →</Text>
+                )}
+              </Pressable>
+
+              <Pressable
+                style={[styles.deleteBtn, deleting && { opacity: 0.55 }]}
+                onPress={handleDelete}
+                disabled={saving || deleting}
+              >
+                {deleting ? (
+                  <ActivityIndicator color="#EF4444" />
+                ) : (
+                  <Text style={styles.deleteText}>Delete Category</Text>
+                )}
+              </Pressable>
+            </>
+          )}
         </BottomSheetScrollView>
       </BottomSheet>
     );
   },
 );
 
-AddCategorySheet.displayName = "AddCategorySheet";
+EditCategorySheet.displayName = "EditCategorySheet";
 
 const styles = StyleSheet.create({
   content: {
@@ -253,6 +335,18 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
+  },
+  globalBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  globalText: {
+    fontSize: 13,
+    flex: 1,
   },
   previewRow: {
     flexDirection: "row",
@@ -298,5 +392,14 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#fff",
     letterSpacing: 0.2,
+  },
+  deleteBtn: {
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  deleteText: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#EF4444",
   },
 });

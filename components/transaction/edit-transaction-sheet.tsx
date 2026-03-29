@@ -1,6 +1,6 @@
+import { AccountList } from "@/components/account/account-list";
+import { CategoryGrid } from "@/components/category/category-grid";
 import { FinanceToggle } from "@/components/finance-toggle";
-import { AccountList } from "@/components/ui/account-list";
-import { CategoryGrid } from "@/components/ui/category-grid";
 import { DatePicker } from "@/components/ui/date-picker";
 import { ErrorText } from "@/components/ui/error-text";
 import { SectionLabel } from "@/components/ui/section-label";
@@ -46,7 +46,7 @@ type Props = {
 export const EditTransactionSheet = forwardRef<BottomSheet, Props>(
   ({ transaction, onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
-    const { colors, spacing } = useTheme();
+    const { colors } = useTheme();
     const snapPoints = useMemo(() => ["85%"], []);
 
     const { accounts, loadingAccounts } = useAccountsData();

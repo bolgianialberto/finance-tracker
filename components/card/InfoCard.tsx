@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ui/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
-import { CARD_STYLES, CardVariant } from "../../variant/card.styles";
+import { CARD_STYLES, CardVariant } from "../../constants/styles/card.styles";
 import { BaseCard } from "./BaseCard";
 
 type Props = {

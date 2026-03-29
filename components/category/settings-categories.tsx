@@ -3,7 +3,7 @@ import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import { Category } from "@/models/category";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { CategoryGrid } from "./ui/category-grid";
+import { CategoryGrid } from "./category-grid";
 
 type Props = {
   categories: Category[];

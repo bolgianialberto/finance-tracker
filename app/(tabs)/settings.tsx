@@ -1,9 +1,10 @@
-import { AddAccountSheet } from "@/components/add-account-sheet";
-import { AddCategorySheet } from "@/components/add-category-sheet";
-import { EditAccountSheet } from "@/components/edit-account-sheet";
-import { EditCategorySheet } from "@/components/edit-category-sheet";
-import { SettingsAccounts } from "@/components/settings-accounts";
-import { SettingsCategories } from "@/components/settings-categories";
+import { AddAccountSheet } from "@/components/account/add-account-sheet";
+import { EditAccountSheet } from "@/components/account/edit-account-sheet";
+import { SettingsAccounts } from "@/components/account/settings-accounts";
+
+import { AddCategorySheet } from "@/components/category/add-category-sheet";
+import { EditCategorySheet } from "@/components/category/edit-category-sheet";
+import { SettingsCategories } from "@/components/category/settings-categories";
 import { SettingsPreferences } from "@/components/settings-preferences";
 import { MonthLabel } from "@/components/ui/month-label";
 import { ThemedText } from "@/components/ui/themed-text";

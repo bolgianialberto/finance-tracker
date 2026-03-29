@@ -1,5 +1,5 @@
-import { theme } from "@/constants/theme";
 import { TextStyle } from "react-native";
+import { theme } from "../theme";
 
 export type TextVariant =
   | "default"

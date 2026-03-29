@@ -21,11 +21,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AccountList } from "./ui/account-list";
-import { CategoryGrid } from "./ui/category-grid";
-import { DatePicker } from "./ui/date-picker";
-import { ErrorText } from "./ui/error-text";
-import { SectionLabel } from "./ui/section-label";
+import { AccountList } from "../account/account-list";
+import { CategoryGrid } from "../category/category-grid";
+import { DatePicker } from "../ui/date-picker";
+import { ErrorText } from "../ui/error-text";
+import { SectionLabel } from "../ui/section-label";
 
 type Props = {
   onSuccess?: () => void;
@@ -35,7 +35,7 @@ type Props = {
 export const AddTransactionSheet = forwardRef<BottomSheet, Props>(
   ({ onSuccess, initialType = "expense" }, ref) => {
     const insets = useSafeAreaInsets();
-    const { colors, spacing } = useTheme();
+    const { colors } = useTheme();
     const snapPoints = useMemo(() => ["85%"], []);
 
     const { accounts, loadingAccounts } = useAccountsData();

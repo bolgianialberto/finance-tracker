@@ -1,7 +1,7 @@
 import { ThemedText } from "@/components/ui/themed-text";
+import { CategoryAmount } from "@/models/category-amount";
 import { StyleSheet, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
-import type { CategoryAmount } from "../models/category-amount";
 
 type Props = {
   data: CategoryAmount[];

@@ -1,4 +1,4 @@
-import { Colors } from "@/constants/theme";
+import { Colors } from "../theme";
 
 export type CardVariant = "default" | "primary" | "success" | "danger";
 

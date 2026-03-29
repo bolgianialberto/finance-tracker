@@ -4,21 +4,21 @@ import { useTheme } from "@/hooks/use-theme";
 import { Account } from "@/models/account";
 import { deleteAccount, updateAccount } from "@/src/queries/settings.queries";
 import BottomSheet, {
-    BottomSheetBackdrop,
-    BottomSheetScrollView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback, useEffect, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ColorPicker } from "./color-picker";
+import { ColorPicker } from "../ui/color-picker";
 
 type Props = {
   account: Account | null;
@@ -28,7 +28,7 @@ type Props = {
 export const EditAccountSheet = forwardRef<BottomSheet, Props>(
   ({ account, onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
-    const { colors, spacing } = useTheme();
+    const { colors } = useTheme();
     const snapPoints = useMemo(() => ["70%"], []);
 
     const [name, setName] = useState("");

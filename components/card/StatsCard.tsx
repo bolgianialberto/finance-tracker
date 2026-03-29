@@ -1,7 +1,10 @@
 import { ThemedText } from "@/components/ui/themed-text";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
-import { CARD_STYLES, type CardVariant } from "../../variant/card.styles";
+import {
+  CARD_STYLES,
+  type CardVariant,
+} from "../../constants/styles/card.styles";
 import type { IconSymbolName } from "../ui/icon-symbol";
 import { IconSymbolWrapped } from "../ui/icon-symbol-wrapped";
 import { BaseCard } from "./BaseCard";

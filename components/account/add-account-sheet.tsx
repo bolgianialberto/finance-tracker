@@ -3,21 +3,21 @@ import { SectionLabel } from "@/components/ui/section-label";
 import { useTheme } from "@/hooks/use-theme";
 import { insertAccount } from "@/src/queries/settings.queries";
 import BottomSheet, {
-    BottomSheetBackdrop,
-    BottomSheetScrollView,
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback, useMemo, useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ColorPicker } from "./color-picker";
+import { ColorPicker } from "../ui/color-picker";
 
 type Props = {
   onSuccess?: () => void;
@@ -28,7 +28,7 @@ const DEFAULT_COLOR = "#3B82F6";
 export const AddAccountSheet = forwardRef<BottomSheet, Props>(
   ({ onSuccess }, ref) => {
     const insets = useSafeAreaInsets();
-    const { colors, spacing } = useTheme();
+    const { colors } = useTheme();
     const snapPoints = useMemo(() => ["75%"], []);
 
     const [name, setName] = useState("");

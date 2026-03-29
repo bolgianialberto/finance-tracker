@@ -2,9 +2,9 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { ThemedText } from "@/components/ui/themed-text";
 import { Colors, Spacing } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { CategoryStats } from "@/models/category-stats";
+import { Transaction } from "@/models/transaction";
 import { Pressable, StyleSheet, View } from "react-native";
-import { CategoryStats } from "../models/category-stats";
-import { Transaction } from "../models/transaction";
 import { TransactionList } from "./transactions-list";
 
 type Props = {

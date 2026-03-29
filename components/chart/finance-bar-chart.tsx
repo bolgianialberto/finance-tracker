@@ -7,8 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import Svg, { Line, Rect, Text as SvgText } from "react-native-svg";
-import { FinanceBarModel } from "../models/finance-bar-model";
-import { ThemedText } from "./ui/themed-text";
+import { FinanceBarModel } from "../../models/finance-bar-model";
+import { ThemedText } from "../ui/themed-text";
 
 type Props = {
   data: FinanceBarModel[];
