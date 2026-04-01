@@ -5,6 +5,7 @@ import { FinanceType } from "@/models/finance-type";
 import { Transaction } from "@/models/transaction";
 import { emitRefresh } from "@/src/lib/refresh-events";
 import { supabase } from "@/src/lib/supabase";
+import { getMonthRange } from "../lib/date-utils";
 
 async function getUserId(): Promise<string> {
   const {
@@ -12,17 +13,6 @@ async function getUserId(): Promise<string> {
   } = await supabase.auth.getUser();
   if (!user) throw new Error("Utente non loggato");
   return user.id;
-}
-
-function getMonthRange(): { firstDay: string; lastDay: string } {
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split("T")[0];
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    .toISOString()
-    .split("T")[0];
-  return { firstDay, lastDay };
 }
 
 export async function fetchTransactionsData(
@@ -33,8 +23,15 @@ export async function fetchTransactionsData(
   transactions: Transaction[];
   total: number;
 }> {
+  console.log("[transactions.queries] fetchTransactionsData — start", { type });
   const userId = await getUserId();
   const { firstDay, lastDay } = getMonthRange();
+  console.log(
+    "[transactions.queries] fetchTransactionsData — range:",
+    firstDay,
+    "→",
+    lastDay,
+  );
 
   const { data, error } = await supabase
     .from("transactions")
@@ -52,23 +49,38 @@ export async function fetchTransactionsData(
     .lte("date", lastDay)
     .order("date", { ascending: false });
 
-  if (error) throw error;
-  if (!data || data.length === 0)
+  if (error) {
+    console.error(
+      "[transactions.queries] fetchTransactionsData — error",
+      error,
+    );
+    throw error;
+  }
+
+  if (!data || data.length === 0) {
+    console.log("[transactions.queries] fetchTransactionsData — no data found");
     return {
       categoryStats: [],
       categoryAmounts: [],
       transactions: [],
       total: 0,
     };
+  }
 
   const transactions = mapToTransactions(data);
   const { categoryStats, categoryAmounts, total } = groupByCategory(data);
+  console.log("[transactions.queries] fetchTransactionsData — result:", {
+    transactions: transactions.length,
+    categories: categoryStats.length,
+    total,
+  });
   return { categoryStats, categoryAmounts, transactions, total };
 }
 
 export async function fetchAllTransactions(
   type: FinanceType,
 ): Promise<Transaction[]> {
+  console.log("[transactions.queries] fetchAllTransactions — start", { type });
   const userId = await getUserId();
 
   let query = supabase
@@ -86,8 +98,18 @@ export async function fetchAllTransactions(
   if (type !== "general") query = query.eq("type", type);
 
   const { data, error } = await query;
-  if (error) throw error;
-  return data ? mapToTransactions(data) : [];
+  if (error) {
+    console.error("[transactions.queries] fetchAllTransactions — error", error);
+    throw error;
+  }
+
+  const result = data ? mapToTransactions(data) : [];
+  console.log(
+    "[transactions.queries] fetchAllTransactions — result:",
+    result.length,
+    "transactions",
+  );
+  return result;
 }
 
 export async function insertTransaction(params: {
@@ -99,6 +121,7 @@ export async function insertTransaction(params: {
   date: string;
   note?: string;
 }): Promise<void> {
+  console.log("[transactions.queries] insertTransaction — start", params);
   const userId = await getUserId();
   const finalNote = params.note?.trim() || params.categoryName;
 
@@ -112,8 +135,15 @@ export async function insertTransaction(params: {
     date: params.date,
   });
 
-  if (error) throw error;
-  emitRefresh("transactions", "accounts"); // aggiorna balance account
+  if (error) {
+    console.error("[transactions.queries] insertTransaction — error", error);
+    throw error;
+  }
+
+  console.log(
+    "[transactions.queries] insertTransaction — success, emitting refresh",
+  );
+  emitRefresh("transactions", "accounts");
 }
 
 export async function updateTransaction(params: {
@@ -125,6 +155,8 @@ export async function updateTransaction(params: {
   date: string;
   note?: string;
 }): Promise<void> {
+  console.log("[transactions.queries] updateTransaction — start", params);
+
   const { error } = await supabase
     .from("transactions")
     .update({
@@ -137,13 +169,30 @@ export async function updateTransaction(params: {
     })
     .eq("id", params.id);
 
-  if (error) throw error;
+  if (error) {
+    console.error("[transactions.queries] updateTransaction — error", error);
+    throw error;
+  }
+
+  console.log(
+    "[transactions.queries] updateTransaction — success, emitting refresh",
+  );
   emitRefresh("transactions", "accounts");
 }
 
 export async function deleteTransaction(id: string): Promise<void> {
+  console.log("[transactions.queries] deleteTransaction — start", { id });
+
   const { error } = await supabase.from("transactions").delete().eq("id", id);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[transactions.queries] deleteTransaction — error", error);
+    throw error;
+  }
+
+  console.log(
+    "[transactions.queries] deleteTransaction — success, emitting refresh",
+  );
   emitRefresh("transactions", "accounts");
 }
 
@@ -202,5 +251,11 @@ function groupByCategory(data: any[]): {
     amount: s.amount,
   }));
   const total = categoryStats.reduce((sum, s) => sum + s.amount, 0);
+  console.log(
+    "[transactions.queries] groupByCategory — categories:",
+    categoryStats.length,
+    "total:",
+    total,
+  );
   return { categoryStats, categoryAmounts, total };
 }

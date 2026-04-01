@@ -15,7 +15,9 @@ async function getUserId(): Promise<string> {
 // ─── Accounts ─────────────────────────────────────────────────────────────────
 
 export async function fetchAccounts(): Promise<Account[]> {
+  console.log("[settings.queries] fetchAccounts — start");
   const userId = await getUserId();
+
   const { data, error } = await supabase
     .from("accounts")
     .select("id, name, balance, color")
@@ -23,7 +25,16 @@ export async function fetchAccounts(): Promise<Account[]> {
     .eq("is_archived", false)
     .order("created_at", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    console.error("[settings.queries] fetchAccounts — error", error);
+    throw error;
+  }
+
+  console.log(
+    "[settings.queries] fetchAccounts — result:",
+    data?.length,
+    "accounts",
+  );
   if (!data) return [];
 
   return data.map((row) => ({
@@ -43,7 +54,13 @@ export async function insertAccount({
   color: string;
   initialBalance: number;
 }): Promise<void> {
+  console.log("[settings.queries] insertAccount — start", {
+    name,
+    color,
+    initialBalance,
+  });
   const userId = await getUserId();
+
   const { error } = await supabase.from("accounts").insert({
     user_id: userId,
     name: name.trim(),
@@ -54,7 +71,13 @@ export async function insertAccount({
     is_default: false,
     is_archived: false,
   });
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] insertAccount — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] insertAccount — success, emitting refresh");
   emitRefresh("accounts");
 }
 
@@ -67,27 +90,45 @@ export async function updateAccount({
   name: string;
   color: string;
 }): Promise<void> {
+  console.log("[settings.queries] updateAccount — start", { id, name, color });
+
   const { error } = await supabase
     .from("accounts")
     .update({ name: name.trim(), color })
     .eq("id", id);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] updateAccount — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] updateAccount — success, emitting refresh");
   emitRefresh("accounts");
 }
 
 export async function deleteAccount(id: string): Promise<void> {
+  console.log("[settings.queries] deleteAccount — start", { id });
+
   const { error } = await supabase
     .from("accounts")
     .update({ is_archived: true })
     .eq("id", id);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] deleteAccount — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] deleteAccount — success, emitting refresh");
   emitRefresh("accounts");
 }
 
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export async function fetchCategories(): Promise<Category[]> {
+  console.log("[settings.queries] fetchCategories — start");
   const userId = await getUserId();
+
   const { data, error } = await supabase
     .from("categories")
     .select("id, name, icon, color, type, user_id, created_at")
@@ -96,7 +137,16 @@ export async function fetchCategories(): Promise<Category[]> {
     .order("user_id", { ascending: true, nullsFirst: true })
     .order("created_at", { ascending: true });
 
-  if (error) throw error;
+  if (error) {
+    console.error("[settings.queries] fetchCategories — error", error);
+    throw error;
+  }
+
+  console.log(
+    "[settings.queries] fetchCategories — result:",
+    data?.length,
+    "categories",
+  );
   if (!data) return [];
 
   return data.map((row) => ({
@@ -121,7 +171,14 @@ export async function insertCategory({
   color: string;
   type: CategoryType;
 }): Promise<void> {
+  console.log("[settings.queries] insertCategory — start", {
+    name,
+    iconKey,
+    color,
+    type,
+  });
   const userId = await getUserId();
+
   const { error } = await supabase.from("categories").insert({
     user_id: userId,
     name: name.trim(),
@@ -130,7 +187,13 @@ export async function insertCategory({
     type,
     is_archived: false,
   });
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] insertCategory — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] insertCategory — success, emitting refresh");
   emitRefresh("categories");
 }
 
@@ -147,19 +210,41 @@ export async function updateCategory({
   color: string;
   type: CategoryType;
 }): Promise<void> {
+  console.log("[settings.queries] updateCategory — start", {
+    id,
+    name,
+    iconKey,
+    color,
+    type,
+  });
+
   const { error } = await supabase
     .from("categories")
     .update({ name: name.trim(), icon: iconKey, color, type })
     .eq("id", id);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] updateCategory — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] updateCategory — success, emitting refresh");
   emitRefresh("categories");
 }
 
 export async function deleteCategory(id: string): Promise<void> {
+  console.log("[settings.queries] deleteCategory — start", { id });
+
   const { error } = await supabase
     .from("categories")
     .update({ is_archived: true })
     .eq("id", id);
-  if (error) throw error;
+
+  if (error) {
+    console.error("[settings.queries] deleteCategory — error", error);
+    throw error;
+  }
+
+  console.log("[settings.queries] deleteCategory — success, emitting refresh");
   emitRefresh("categories");
 }

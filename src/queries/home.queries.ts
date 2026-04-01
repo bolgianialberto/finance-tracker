@@ -1,6 +1,6 @@
 import { supabase } from "@/src/lib/supabase";
+import { getMonthRange } from "../lib/date-utils";
 
-// Prende l'ID dell'utente loggato
 async function getUserId(): Promise<string> {
   const {
     data: { user },
@@ -9,8 +9,8 @@ async function getUserId(): Promise<string> {
   return user.id;
 }
 
-// Somma i balance di tutti gli account dell'utente
 export async function fetchTotalBalance(): Promise<number> {
+  console.log("[home.queries] fetchTotalBalance — start");
   const userId = await getUserId();
 
   const { data, error } = await supabase
@@ -19,36 +19,45 @@ export async function fetchTotalBalance(): Promise<number> {
     .eq("user_id", userId)
     .eq("is_archived", false);
 
-  if (error) throw error;
-  return data.reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+  if (error) {
+    console.error("[home.queries] fetchTotalBalance — error", error);
+    throw error;
+  }
+
+  const total = data.reduce((sum, acc) => sum + (acc.balance ?? 0), 0);
+  console.log("[home.queries] fetchTotalBalance — result:", total);
+  return total;
 }
 
-// Income, Expenses e Net Savings del mese corrente
 export async function fetchMonthlyStats(): Promise<{
   income: number;
   expenses: number;
   netSavings: number;
 }> {
+  console.log("[home.queries] fetchMonthlyStats — start");
   const userId = await getUserId();
 
-  // Primo e ultimo giorno del mese corrente
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split("T")[0];
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-    .toISOString()
-    .split("T")[0];
+  const { firstDay, lastDay } = getMonthRange();
+
+  console.log(
+    "[home.queries] fetchMonthlyStats — range:",
+    firstDay,
+    "→",
+    lastDay,
+  );
 
   const { data, error } = await supabase
     .from("transactions")
     .select("type, amount")
     .eq("user_id", userId)
-    .is("transfer_id", null) // escludi i trasferimenti interni
+    .is("transfer_id", null)
     .gte("date", firstDay)
     .lte("date", lastDay);
 
-  if (error) throw error;
+  if (error) {
+    console.error("[home.queries] fetchMonthlyStats — error", error);
+    throw error;
+  }
 
   const income = data
     .filter((t) => t.type === "income")
@@ -57,6 +66,13 @@ export async function fetchMonthlyStats(): Promise<{
   const expenses = data
     .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
+
+  console.log(
+    "[home.queries] fetchMonthlyStats — income:",
+    income,
+    "expenses:",
+    expenses,
+  );
 
   return {
     income,

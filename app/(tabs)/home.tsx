@@ -21,11 +21,6 @@ export default function HomeScreen() {
     sheetRef.current?.expand();
   }
 
-  function handleTransactionAdded() {
-    // Ricarica i dati della home dopo l'inserimento
-    refetch();
-  }
-
   return (
     <SafeAreaView style={styles.externalContainer}>
       <View style={styles.header}>
@@ -93,7 +88,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Bottom Sheet */}
-      <AddTransactionSheet ref={sheetRef} onSuccess={handleTransactionAdded} />
+      <AddTransactionSheet ref={sheetRef} />
     </SafeAreaView>
   );
 }
